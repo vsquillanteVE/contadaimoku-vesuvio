@@ -1,0 +1,6 @@
+// URL dell'API in produzione (Vercel)
+const PROD_API_URL = 'https://contadaimoku-vesuvio-backend.vercel.app/api';
+// URL dell'API in sviluppo (locale)
+const DEV_API_URL = 'http://localhost:3001/api';
+// Usa l'URL di produzione o di sviluppo in base all'ambiente
+const API_URL = process.env.NODE_ENV === 'production' ? PROD_API_URL : DEV_API_URL;

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contadaimoku Vesuvio API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .endpoint {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    code {
+      background-color: #eee;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contadaimoku Vesuvio API</h1>
+  <p>Benvenuti all'API del progetto Contadaimoku Vesuvio.</p>
+  
+  <h2>Endpoints disponibili:</h2>
+  
+  <div class="endpoint">
+    <h3>GET /api/count</h3>
+    <p>Restituisce il conteggio attuale del Daimoku.</p>
+  </div>
+  
+  <div class="endpoint">
+    <h3>POST /api/count</h3>
+    <p>Incrementa il conteggio del Daimoku.</p>
+    <p>Body: <code>{ "amount": number }</code></p>
+  </div>
+  
+  <div class="endpoint">
+    <h3>GET /api/message</h3>
+    <p>Restituisce il messaggio in evidenza.</p>
+  </div>
+  
+  <div class="endpoint">
+    <h3>POST /api/message</h3>
+    <p>Aggiorna il messaggio in evidenza (richiede autenticazione).</p>
+  </div>
+  
+  <div class="endpoint">
+    <h3>GET /api/message/history</h3>
+    <p>Restituisce la cronologia dei messaggi.</p>
+  </div>
+  
+  <div class="endpoint">
+    <h3>POST /api/login</h3>
+    <p>Effettua il login come amministratore.</p>
+  </div>
+  
+  <p>Per utilizzare questa API, fare riferimento alla documentazione completa.</p>
+</body>
+</html>
