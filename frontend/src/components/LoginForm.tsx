@@ -41,56 +41,65 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <header className="header">
-          <div className="logo-container">
-            <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="logo-image" />
-            <h1>Accesso Amministratore</h1>
+        <div className="login-header">
+          <div className="login-logo-container">
+            <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="login-logo-image" />
           </div>
+          <h1 className="login-title">Accesso Amministratore</h1>
           <p className="login-description">
             Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Capitolo Litorale Vesuviano.
           </p>
-        </header>
+        </div>
 
         <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
+          <div className="login-form-group">
             <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={loading}
-              className="text-input"
-              placeholder="Inserisci username"
-            />
+            <div className="login-input-container">
+              <span className="login-input-icon">👤</span>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
+                className="login-input"
+                placeholder="Inserisci username"
+              />
+            </div>
           </div>
 
-          <div className="form-group">
+          <div className="login-form-group">
             <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              className="text-input"
-              placeholder="Inserisci password"
-            />
+            <div className="login-input-container">
+              <span className="login-input-icon">🔒</span>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                className="login-input"
+                placeholder="Inserisci password"
+              />
+            </div>
           </div>
 
           {error && (
-            <div className="status-message error">
+            <div className="login-error">
+              <span className="login-error-icon">⚠️</span>
               {error}
             </div>
           )}
 
-          <button type="submit" className="submit-button" disabled={loading}>
+          <button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Accesso in corso...' : 'Accedi'}
           </button>
         </form>
 
-        <div className="back-link">
-          <a href="/">Torna alla home</a>
+        <div className="login-footer">
+          <a href="/" className="login-back-link">
+            <span className="login-back-icon">←</span> Torna alla home
+          </a>
         </div>
       </div>
     </div>
