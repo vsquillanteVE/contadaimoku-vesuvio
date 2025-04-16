@@ -164,12 +164,21 @@ const AdminPage: React.FC = () => {
                 toolbar: 'undo redo | blocks | ' +
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | help',
+                  'link | removeformat | help',
                 content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:18px }',
                 skin: 'oxide',
                 promotion: false,
                 statusbar: false,
-                resize: false
+                resize: false,
+                browser_spellcheck: true,
+                contextmenu: false,
+                paste_data_images: true,
+                paste_as_text: false,
+                paste_merge_formats: true,
+                paste_webkit_styles: 'all',
+                paste_retain_style_properties: 'all',
+                paste_remove_styles_if_webkit: false,
+                paste_filter_drop: false
               }}
             />
             <p className="help-text">
@@ -195,12 +204,21 @@ const AdminPage: React.FC = () => {
                 toolbar: 'undo redo | blocks | ' +
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | help',
+                  'link image | removeformat | help',
                 content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:18px }',
                 skin: 'oxide',
                 promotion: false,
                 statusbar: false,
-                resize: false
+                resize: false,
+                browser_spellcheck: true,
+                contextmenu: false,
+                paste_data_images: true,
+                paste_as_text: false,
+                paste_merge_formats: true,
+                paste_webkit_styles: 'all',
+                paste_retain_style_properties: 'all',
+                paste_remove_styles_if_webkit: false,
+                paste_filter_drop: false
               }}
             />
             <p className="help-text">
