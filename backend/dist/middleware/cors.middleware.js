@@ -22,10 +22,13 @@ exports.corsMiddleware = (0, cors_1.default)({
  * @param next Funzione next
  */
 const corsHeadersMiddleware = (req, res, next) => {
+    // Permetti tutte le origini in sviluppo o usa quelle configurate
     res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Methods', config_1.default.cors.methods.join(', '));
-    res.header('Access-Control-Allow-Headers', config_1.default.cors.allowedHeaders.join(', '));
-    res.header('Access-Control-Allow-Credentials', String(config_1.default.cors.credentials));
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control, X-Requested-With, Accept, Origin, Pragma, Expires');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '86400'); // 24 ore
+
     // Gestisci le richieste OPTIONS (preflight)
     if (req.method === 'OPTIONS') {
         res.status(200).end();
