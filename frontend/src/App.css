@@ -650,7 +650,7 @@ body {
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  padding: 1rem;
+  padding: 0;
   background-color: #f0f4f8;
   background-image: linear-gradient(135deg, rgba(240, 244, 248, 0.97) 0%, rgba(220, 230, 240, 0.97) 100%), url('/logo.png');
   background-repeat: no-repeat;
@@ -663,26 +663,18 @@ body {
   align-items: center;
 }
 
-.login-card {
+.login-fullscreen {
   background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  padding: 0;
   width: 100%;
-  max-width: 420px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  overflow: hidden;
-}
-
-.login-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .login-header {
   background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
-  padding: 2.5rem 2.5rem 2rem;
+  padding: 3rem 2rem;
   text-align: center;
   position: relative;
 }
@@ -694,8 +686,8 @@ body {
 }
 
 .login-logo-image {
-  height: 100px;
-  width: 100px;
+  height: 120px;
+  width: 120px;
   object-fit: contain;
   background-color: white;
   border-radius: 50%;
@@ -704,24 +696,31 @@ body {
 }
 
 .login-title {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  margin: 0 0 1rem;
+  margin: 0 0 1.5rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-description {
-  font-size: 0.95rem;
-  opacity: 0.9;
-  margin: 0;
-  line-height: 1.5;
+  font-size: 1.1rem;
+  opacity: 1;
+  margin: 0 auto;
+  line-height: 1.6;
+  max-width: 600px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-weight: 400;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
-  padding: 2.5rem;
+  gap: 2rem;
+  padding: 3rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
 }
 
 .login-form-group {
@@ -822,26 +821,32 @@ body {
 }
 
 .login-footer {
-  padding: 1.5rem 2.5rem 2.5rem;
+  padding: 2rem;
   text-align: center;
   border-top: 1px solid #f3f4f6;
+  background-color: #f9fafb;
 }
 
 .login-back-link {
   color: #4b5563;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
 }
 
 .login-back-link:hover {
   color: #3b82f6;
   background-color: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .login-back-icon {

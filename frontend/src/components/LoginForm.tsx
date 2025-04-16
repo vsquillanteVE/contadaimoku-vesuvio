@@ -40,7 +40,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="login-container">
-      <div className="login-card">
+      <div className="login-fullscreen">
         <div className="login-header">
           <div className="login-logo-container">
             <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="login-logo-image" />
