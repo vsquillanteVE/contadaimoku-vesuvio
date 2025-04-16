@@ -7,9 +7,16 @@ const DEV_API_URL = 'http://localhost:3001/api';
 // Usa l'URL di produzione o di sviluppo in base all'ambiente
 const API_URL = process.env.NODE_ENV === 'production' ? PROD_API_URL : DEV_API_URL;
 
+// Configura axios per non utilizzare la cache
+axios.defaults.headers.common['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+axios.defaults.headers.common['Pragma'] = 'no-cache';
+axios.defaults.headers.common['Expires'] = '0';
+
 export const getCount = async (): Promise<number> => {
   try {
-    const response = await axios.get(`${API_URL}/count`);
+    const response = await axios.get(`${API_URL}/count`, {
+      params: { _t: new Date().getTime() } // Aggiunge un timestamp per evitare la cache
+    });
     return response.data.count;
   } catch (error) {
     console.error('Error fetching count:', error);
@@ -50,7 +57,9 @@ interface MessageHistory {
 
 export const getMessage = async (): Promise<Message> => {
   try {
-    const response = await axios.get(`${API_URL}/message`);
+    const response = await axios.get(`${API_URL}/message`, {
+      params: { _t: new Date().getTime() } // Aggiunge un timestamp per evitare la cache
+    });
     return response.data.message;
   } catch (error) {
     console.error('Error fetching message:', error);
@@ -65,7 +74,7 @@ export const getMessage = async (): Promise<Message> => {
 
 export const login = async (username: string, password: string): Promise<User> => {
   try {
-    const response = await axios.post(`${API_URL}/login`, { username, password });
+    const response = await axios.post(`${API_URL}/auth/login`, { username, password });
     return response.data.user;
   } catch (error) {
     console.error('Error logging in:', error);
@@ -85,7 +94,12 @@ export const updateMessage = async (content: string, htmlContent: string, fullCo
 
 export const getMessageHistory = async (limit: number = 10): Promise<MessageHistory[]> => {
   try {
-    const response = await axios.get(`${API_URL}/message/history?limit=${limit}`);
+    const response = await axios.get(`${API_URL}/message/history`, {
+      params: { 
+        limit,
+        _t: new Date().getTime() // Aggiunge un timestamp per evitare la cache
+      }
+    });
     return response.data.history;
   } catch (error) {
     console.error('Error fetching message history:', error);

@@ -17,22 +17,29 @@ const Counter: React.FC = () => {
     config: { mass: 1, tension: 20, friction: 10 },
   });
 
-  useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        setLoading(true);
-        const currentCount = await getCount();
-        setCount(currentCount);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch count');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCount = async () => {
+    try {
+      setLoading(true);
+      const currentCount = await getCount();
+      setCount(currentCount);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch count');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchCount();
+
+    // Aggiorna il conteggio ogni 30 secondi
+    const intervalId = setInterval(() => {
+      fetchCount();
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleIncrement = async () => {
@@ -45,11 +52,11 @@ const Counter: React.FC = () => {
     }
   };
 
-  if (loading) {
+  if (loading && count === 0) {
     return <div className="counter-loading">Loading...</div>;
   }
 
-  if (error) {
+  if (error && count === 0) {
     return <div className="counter-error">{error}</div>;
   }
 
@@ -73,6 +80,11 @@ const Counter: React.FC = () => {
   const updateCount = (newCount: number) => {
     setCount(newCount);
     showThankYouMessage();
+    
+    // Aggiorna il conteggio dopo un breve ritardo per assicurarsi che il server abbia elaborato la richiesta
+    setTimeout(() => {
+      fetchCount();
+    }, 1000);
   };
 
   return (
