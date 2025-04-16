@@ -137,7 +137,8 @@ const AdminPage: React.FC = () => {
         <Logo />
         <h1>Amministrazione</h1>
         <p className="admin-description">
-          Benvenuto, {username}! Qui puoi modificare il messaggio principale visualizzato nella home page.
+          Benvenuto, {username}!<br />
+          Qui puoi modificare il messaggio principale visualizzato nella home page.
         </p>
       </div>
 

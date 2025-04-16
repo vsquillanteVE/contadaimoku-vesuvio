@@ -80,7 +80,7 @@ const Counter: React.FC = () => {
   const updateCount = (newCount: number) => {
     setCount(newCount);
     showThankYouMessage();
-    
+
     // Aggiorna il conteggio dopo un breve ritardo per assicurarsi che il server abbia elaborato la richiesta
     setTimeout(() => {
       fetchCount();
@@ -102,7 +102,7 @@ const Counter: React.FC = () => {
       )}
       <div className="counter-buttons">
         <button className="counter-button time-button" onClick={openModal}>
-          Aggiungi Tempo
+          Aggiungi Daimoku
         </button>
       </div>
 
