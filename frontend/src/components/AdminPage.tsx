@@ -49,6 +49,27 @@ const AdminPage: React.FC = () => {
     fetchMessage();
   }, []);
 
+  // Aggiorna il contenuto degli editor quando cambia lo stato
+  useEffect(() => {
+    if (objectivesEditorRef.current && objectivesContent) {
+      // Verifica se il contenuto è già caricato nell'editor
+      const currentContent = objectivesEditorRef.current.getContent();
+      if (currentContent !== objectivesContent) {
+        objectivesEditorRef.current.setContent(objectivesContent);
+      }
+    }
+  }, [objectivesContent]);
+
+  useEffect(() => {
+    if (contentEditorRef.current && fullContent) {
+      // Verifica se il contenuto è già caricato nell'editor
+      const currentContent = contentEditorRef.current.getContent();
+      if (currentContent !== fullContent) {
+        contentEditorRef.current.setContent(fullContent);
+      }
+    }
+  }, [fullContent]);
+
   const fetchHistory = async () => {
     try {
       const historyData = await getMessageHistory(20);
@@ -87,7 +108,11 @@ const AdminPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!fullContent.trim()) {
+    // Recupera il contenuto direttamente dagli editor
+    const currentObjectivesContent = objectivesEditorRef.current ? objectivesEditorRef.current.getContent() : objectivesContent;
+    const currentFullContent = contentEditorRef.current ? contentEditorRef.current.getContent() : fullContent;
+
+    if (!currentFullContent.trim()) {
       setStatus('Il contenuto della pagina non può essere vuoto');
       return;
     }
@@ -98,10 +123,14 @@ const AdminPage: React.FC = () => {
 
       // Utilizziamo il contenuto HTML dell'editor WYSIWYG come messaggio in evidenza
       // Estraiamo i primi 100 caratteri per il messaggio in evidenza
-      const shortContent = fullContent.replace(/<[^>]*>/g, '').substring(0, 100);
+      const shortContent = currentFullContent.replace(/<[^>]*>/g, '').substring(0, 100);
       const shortHtmlContent = `<p>${shortContent}...</p>`;
 
-      const updatedMessage = await updateMessage(shortContent, shortHtmlContent, fullContent, objectivesContent, username, password);
+      const updatedMessage = await updateMessage(shortContent, shortHtmlContent, currentFullContent, currentObjectivesContent, username, password);
+
+      // Aggiorniamo lo stato locale con i valori recuperati dagli editor
+      setFullContent(currentFullContent);
+      setObjectivesContent(currentObjectivesContent);
       setMessage(updatedMessage.content);
       setHtmlContent(updatedMessage.htmlContent);
       if (updatedMessage.fullContent) {
@@ -151,7 +180,6 @@ const AdminPage: React.FC = () => {
             <Editor
               onInit={(evt, editor) => objectivesEditorRef.current = editor}
               initialValue={objectivesContent}
-              onEditorChange={(content) => setObjectivesContent(content)}
               apiKey="33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq"
               init={{
                 height: 250,
@@ -178,7 +206,19 @@ const AdminPage: React.FC = () => {
                 paste_webkit_styles: 'all',
                 paste_retain_style_properties: 'all',
                 paste_remove_styles_if_webkit: false,
-                paste_filter_drop: false
+                paste_filter_drop: false,
+                entity_encoding: 'raw',
+                forced_root_block: 'p',
+                valid_elements: '*[*]',
+                valid_children: '+body[style],+div[style]',
+                extended_valid_elements: 'img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]',
+                fix_list_elements: true,
+                keep_styles: true,
+                schema: 'html5',
+                apply_source_formatting: false,
+                convert_urls: false,
+                relative_urls: false,
+                remove_script_host: false
               }}
             />
             <p className="help-text">
@@ -191,7 +231,6 @@ const AdminPage: React.FC = () => {
             <Editor
               onInit={(evt, editor) => contentEditorRef.current = editor}
               initialValue={fullContent}
-              onEditorChange={(content) => setFullContent(content)}
               apiKey="33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq"
               init={{
                 height: 400,
@@ -218,7 +257,19 @@ const AdminPage: React.FC = () => {
                 paste_webkit_styles: 'all',
                 paste_retain_style_properties: 'all',
                 paste_remove_styles_if_webkit: false,
-                paste_filter_drop: false
+                paste_filter_drop: false,
+                entity_encoding: 'raw',
+                forced_root_block: 'p',
+                valid_elements: '*[*]',
+                valid_children: '+body[style],+div[style]',
+                extended_valid_elements: 'img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]',
+                fix_list_elements: true,
+                keep_styles: true,
+                schema: 'html5',
+                apply_source_formatting: false,
+                convert_urls: false,
+                relative_urls: false,
+                remove_script_host: false
               }}
             />
             <p className="help-text">
