@@ -45,7 +45,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           <Logo />
           <h2>Accesso Amministratore</h2>
           <p className="login-description">
-            Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Vesuvio.
+            Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Capitolo Litorale Vesuviano.
           </p>
         </div>
 
