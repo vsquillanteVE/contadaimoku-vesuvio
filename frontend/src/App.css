@@ -26,14 +26,28 @@ body {
   width: 100%;
   background-color: white;
   padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  background-image: url('/logo.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 70%;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
+  background-color: rgba(255, 255, 255, 0.85);
 }
 
 /* Header Styles */
 .header {
   text-align: center;
   margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
+  padding: 1.5rem;
   border-bottom: 1px solid #eee;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
 }
 
 .logo-container {
@@ -45,7 +59,7 @@ body {
 }
 
 .logo {
-  height: 40px;
+  height: 60px;
   margin-right: 15px;
 }
 
@@ -67,15 +81,17 @@ body {
 .counter-display {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: rgba(255, 255, 255, 0.95);
   padding: 1rem;
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 2;
 }
 
 .counter-value {
@@ -211,7 +227,7 @@ body {
   background-color: #3b82f6;
   color: white;
   border: none;
-  padding: 14px 20px;
+  padding: 16px 24px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
@@ -219,6 +235,7 @@ body {
   font-size: 1rem;
   margin-top: 0.5rem;
   letter-spacing: 0.3px;
+  width: 100%;
 }
 
 .submit-button:hover {
@@ -243,12 +260,21 @@ body {
 .admin-container {
   width: 100%;
   min-height: 100vh;
+  height: 100%;
   margin: 0;
   padding: 2rem;
   background-color: #f8f9fa;
-  background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%), url('/logo.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 70%;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
 }
 
 .admin-header {
@@ -259,6 +285,7 @@ body {
   margin-bottom: 2.5rem;
   text-align: center;
   transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
 }
 
 .admin-header:hover {
@@ -275,6 +302,20 @@ body {
 
 .admin-header .logo-container {
   margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.admin-header .logo-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+}
+
+@media (min-width: 1024px) {
+  .admin-header .logo-container {
+    justify-content: flex-start;
+  }
 }
 
 .admin-description {
@@ -294,6 +335,8 @@ body {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   padding: 2rem;
   transition: transform 0.3s, box-shadow 0.3s;
+  flex: 1;
+  margin-bottom: 2rem;
 }
 
 .admin-form:hover {
@@ -305,11 +348,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  width: 100%;
 }
 
 .editor-container {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   border-radius: 8px;
+  width: 100%;
 }
 
 .editor-container .tox-tinymce {
@@ -325,10 +370,12 @@ body {
 }
 
 .editor-container h3 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.75rem;
 }
 
 .logo-container {
@@ -340,7 +387,7 @@ body {
 .logo-image {
   max-width: 100%;
   height: auto;
-  max-height: 80px;
+  max-height: 120px;
 }
 
 /* Rimuoviamo lo stile del logo nella sezione Information */
@@ -436,20 +483,22 @@ body {
 .admin-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   margin-top: 2rem;
+  width: 100%;
 }
 
 .history-button {
   background-color: #64748b;
   color: white;
   border: none;
-  padding: 14px 20px;
+  padding: 16px 24px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
   font-weight: 600;
   letter-spacing: 0.3px;
+  width: 100%;
 }
 
 .history-button:hover {
@@ -470,6 +519,7 @@ body {
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
 }
 
 .history-container:hover {
@@ -544,18 +594,23 @@ body {
 }
 
 .back-link {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
   text-align: center;
+  width: 100%;
 }
 
 .back-link a {
   color: #3b82f6;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 1rem;
   transition: all 0.3s;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 12px 20px;
+  border-radius: 8px;
   display: inline-block;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .back-link a:hover {
@@ -615,6 +670,12 @@ body {
   max-height: 80px;
 }
 
+@media (min-width: 1024px) {
+  .login-header .logo-container {
+    justify-content: flex-start;
+  }
+}
+
 .login-description {
   margin-top: 1rem;
   margin-bottom: 1.5rem;
@@ -651,8 +712,13 @@ body {
 }
 
 .information-list {
-  padding-left: 20px;
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
 }
 
 .information-list li {
@@ -660,10 +726,13 @@ body {
 }
 
 .message-container {
-  background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  border-radius: 8px;
   margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
 }
 
 .message-highlight {
@@ -675,9 +744,14 @@ body {
 .footer {
   text-align: center;
   margin-top: 1.5rem;
-  padding-top: 1rem;
+  padding: 1.5rem;
   border-top: 1px solid #eee;
   color: #666;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
 }
 
 /* Media Queries */
@@ -712,6 +786,12 @@ body {
   .admin-buttons {
     flex-direction: row;
     justify-content: space-between;
+    gap: 20px;
+  }
+
+  .admin-buttons .submit-button,
+  .admin-buttons .history-button {
+    width: 50%;
   }
 
   .history-meta {
