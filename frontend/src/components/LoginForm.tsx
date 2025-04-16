@@ -45,7 +45,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           <Logo />
           <h2>Accesso Amministratore</h2>
           <p className="login-description">
-            Inserisci le tue credenziali per accedere all'area di amministrazione.
+            Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Vesuvio.
           </p>
         </div>
 
@@ -76,7 +76,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
             />
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="status-message error">
+              {error}
+            </div>
+          )}
 
           <button type="submit" className="submit-button" disabled={loading}>
             {loading ? 'Accesso in corso...' : 'Accedi'}

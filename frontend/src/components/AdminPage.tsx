@@ -161,7 +161,11 @@ const AdminPage: React.FC = () => {
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
                   'removeformat | help',
-                content_style: 'body { font-family:Arial,sans-serif; font-size:14px }'
+                content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:14px }',
+                skin: 'oxide',
+                promotion: false,
+                statusbar: false,
+                resize: false
               }}
             />
             <p className="help-text">
@@ -187,7 +191,11 @@ const AdminPage: React.FC = () => {
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
                   'removeformat | help',
-                content_style: 'body { font-family:Arial,sans-serif; font-size:14px }'
+                content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:14px }',
+                skin: 'oxide',
+                promotion: false,
+                statusbar: false,
+                resize: false
               }}
             />
             <p className="help-text">
@@ -196,7 +204,11 @@ const AdminPage: React.FC = () => {
           </div>
         </div>
 
-        {status && <div className={`status-message ${status.includes('successo') ? 'success' : 'error'}`}>{status}</div>}
+        {status && (
+          <div className={`status-message ${status.includes('successo') ? 'success' : 'error'}`}>
+            {status}
+          </div>
+        )}
         <div className="admin-buttons">
           <button type="button" className="history-button" onClick={toggleHistory}>
             {showHistory ? 'Nascondi Cronologia' : 'Mostra Cronologia'}
