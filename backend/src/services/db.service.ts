@@ -1,27 +1,8 @@
-// Definizione delle interfacce
-import { persistenceService } from './persistence.service';
+// Importa il servizio PostgreSQL
+import { postgresDBService, Message, User, MessageHistoryItem } from './db.postgres.service';
 
-export interface Message {
-  content: string;
-  htmlContent: string;
-  fullContent: string;
-  objectivesContent: string;
-}
-
-export interface User {
-  id: number;
-  username: string;
-  password: string;
-}
-
-export interface MessageHistoryItem {
-  id: number;
-  content: string;
-  html_content: string;
-  full_content: string;
-  objectives_content: string;
-  created_at: string;
-}
+// Esporta le interfacce
+export { Message, User, MessageHistoryItem };
 
 /**
  * Classe per gestire le operazioni sul database
@@ -31,8 +12,8 @@ class DBService {
    * Ottiene il conteggio attuale
    * @returns Il conteggio attuale
    */
-  getCount(): number {
-    return persistenceService.getData().counter;
+  async getCount(): Promise<number> {
+    return postgresDBService.getCount();
   }
 
   /**
@@ -40,27 +21,24 @@ class DBService {
    * @param amount Quantità da incrementare (default: 1)
    * @returns Il nuovo conteggio
    */
-  incrementCount(amount: number = 1): number {
-    const newCount = persistenceService.getData().counter + amount;
-    persistenceService.updateCounter(newCount);
-    return newCount;
+  async incrementCount(amount: number = 1): Promise<number> {
+    return postgresDBService.incrementCount(amount);
   }
 
   /**
    * Resetta il conteggio a 0
    * @returns true se l'operazione è riuscita
    */
-  resetCount(): boolean {
-    persistenceService.updateCounter(0);
-    return true;
+  async resetCount(): Promise<boolean> {
+    return postgresDBService.resetCount();
   }
 
   /**
    * Ottiene il messaggio attuale
    * @returns Il messaggio attuale
    */
-  getMessage(): Message {
-    return persistenceService.getData().message;
+  async getMessage(): Promise<Message> {
+    return postgresDBService.getMessage();
   }
 
   /**
@@ -71,16 +49,8 @@ class DBService {
    * @param objectivesContent Contenuto degli obiettivi
    * @returns Il messaggio aggiornato
    */
-  updateMessage(content: string, htmlContent: string, fullContent: string, objectivesContent: string): Message {
-    const newMessage: Message = {
-      content,
-      htmlContent,
-      fullContent,
-      objectivesContent
-    };
-    
-    persistenceService.updateMessage(newMessage);
-    return newMessage;
+  async updateMessage(content: string, htmlContent: string, fullContent: string, objectivesContent: string): Promise<Message> {
+    return postgresDBService.updateMessage(content, htmlContent, fullContent, objectivesContent);
   }
 
   /**
@@ -88,8 +58,8 @@ class DBService {
    * @param limit Numero massimo di messaggi da restituire (default: 10)
    * @returns La cronologia dei messaggi
    */
-  getMessageHistory(limit: number = 10): MessageHistoryItem[] {
-    return persistenceService.getData().messageHistory.slice(0, limit);
+  async getMessageHistory(limit: number = 10): Promise<MessageHistoryItem[]> {
+    return postgresDBService.getMessageHistory(limit);
   }
 
   /**
@@ -98,9 +68,8 @@ class DBService {
    * @param password Password
    * @returns L'utente autenticato o null se l'autenticazione fallisce
    */
-  authenticateUser(username: string, password: string): User | null {
-    const user = persistenceService.getData().users.find(u => u.username === username && u.password === password);
-    return user || null;
+  async authenticateUser(username: string, password: string): Promise<User | null> {
+    return postgresDBService.authenticateUser(username, password);
   }
 }
 
