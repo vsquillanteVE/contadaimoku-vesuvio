@@ -169,15 +169,35 @@ body {
 }
 
 /* Modal Styles */
+.ReactModal__Overlay {
+  z-index: 9998 !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.ReactModal__Content {
+  z-index: 9999 !important;
+  position: relative !important;
+  background-color: white !important;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
 .modal-title {
   text-align: center;
   margin-top: 0;
-  color: #333;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .modal-description {
   margin-bottom: 20px;
-  color: #666;
+  color: #6c757d;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .time-input-form {
@@ -200,10 +220,21 @@ body {
 }
 
 .time-input {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+  background-color: #f8fafc;
+  color: #334155;
+  width: 100%;
+}
+
+.time-input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background-color: #fff;
 }
 
 .error-message {
@@ -215,20 +246,26 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  gap: 15px;
 }
 
 .cancel-button {
   background-color: #f8f9fa;
   color: #333;
   border: 1px solid #ddd;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 12px 20px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 0.95rem;
+  flex: 1;
 }
 
 .cancel-button:hover {
   background-color: #e9ecef;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .submit-button {

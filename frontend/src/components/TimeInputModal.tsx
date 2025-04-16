@@ -29,9 +29,16 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
       width: '90%',
       padding: '20px',
       borderRadius: '8px',
+      zIndex: 9999,
+      position: 'relative',
+      backgroundColor: 'white',
+      boxShadow: '0 10px 50px rgba(0, 0, 0, 0.5)',
+      border: '1px solid rgba(0, 0, 0, 0.2)',
     },
     overlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      zIndex: 9998,
+      backdropFilter: 'blur(5px)',
     },
   };
 
@@ -55,14 +62,14 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
   // Gestisce l'invio del form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const count = convertTimeToCount();
-    
+
     if (count <= 0) {
       setError('Inserisci un valore maggiore di zero');
       return;
     }
-    
+
     try {
       setError(null);
       const newCount = await incrementCount(count);
@@ -81,12 +88,12 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
       style={customStyles}
       contentLabel="Inserisci Tempo Daimoku"
     >
-      <h2 className="modal-title">Aggiungi Tempo Daimoku</h2>
+      <h2 className="modal-title">Aggiungi Daimoku</h2>
       <p className="modal-description">
         Inserisci il tempo dedicato alla recitazione del Daimoku.
         Ogni minuto verrà conteggiato come 1 Daimoku.
       </p>
-      
+
       <form onSubmit={handleSubmit} className="time-input-form">
         <div className="form-group">
           <label htmlFor="hours">Ore:</label>
@@ -99,7 +106,7 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
             className="time-input"
           />
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="minutes">Minuti:</label>
           <input
@@ -112,9 +119,9 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
             className="time-input"
           />
         </div>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <div className="modal-buttons">
           <button type="button" onClick={onRequestClose} className="cancel-button">
             Annulla
