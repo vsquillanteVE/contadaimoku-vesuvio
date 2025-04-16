@@ -70,6 +70,29 @@ const AdminPage: React.FC = () => {
     }
   }, [fullContent]);
 
+  // Configurazione avanzata per gli editor
+  const editorSetup = (editor: TinyMCEEditor) => {
+    // Disabilita il rilevamento automatico degli URL
+    editor.on('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        // Previene la conversione automatica degli URL
+        e.stopImmediatePropagation();
+      }
+    });
+
+    // Previene il reset del cursore
+    editor.on('BeforeAddUndo', (e) => {
+      // Mantiene la posizione del cursore durante l'aggiunta di undo
+      e.preventDefault();
+    });
+
+    // Migliora la gestione del focus
+    editor.on('focus', () => {
+      // Assicura che l'editor mantenga il focus
+      editor.focus();
+    });
+  };
+
   const fetchHistory = async () => {
     try {
       const historyData = await getMessageHistory(20);
@@ -178,7 +201,10 @@ const AdminPage: React.FC = () => {
           <h3>Modifica gli obiettivi:</h3>
           <div className="editor-container">
             <Editor
-              onInit={(evt, editor) => objectivesEditorRef.current = editor}
+              onInit={(evt, editor) => {
+                objectivesEditorRef.current = editor;
+                editorSetup(editor);
+              }}
               initialValue={objectivesContent}
               apiKey="33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq"
               init={{
@@ -218,7 +244,16 @@ const AdminPage: React.FC = () => {
                 apply_source_formatting: false,
                 convert_urls: false,
                 relative_urls: false,
-                remove_script_host: false
+                remove_script_host: false,
+                auto_focus: false,
+                setup: (editor) => {
+                  editor.on('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                      // Previene la conversione automatica degli URL
+                      e.stopImmediatePropagation();
+                    }
+                  });
+                }
               }}
             />
             <p className="help-text">
@@ -229,7 +264,10 @@ const AdminPage: React.FC = () => {
           <h3>Modifica il contenuto della pagina:</h3>
           <div className="editor-container">
             <Editor
-              onInit={(evt, editor) => contentEditorRef.current = editor}
+              onInit={(evt, editor) => {
+                contentEditorRef.current = editor;
+                editorSetup(editor);
+              }}
               initialValue={fullContent}
               apiKey="33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq"
               init={{
@@ -269,7 +307,16 @@ const AdminPage: React.FC = () => {
                 apply_source_formatting: false,
                 convert_urls: false,
                 relative_urls: false,
-                remove_script_host: false
+                remove_script_host: false,
+                auto_focus: false,
+                setup: (editor) => {
+                  editor.on('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                      // Previene la conversione automatica degli URL
+                      e.stopImmediatePropagation();
+                    }
+                  });
+                }
               }}
             />
             <p className="help-text">
