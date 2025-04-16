@@ -75,10 +75,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Mobile-first Media Queries */
-/* Base styles are for mobile */
-
-/* Tablet and larger */
+/* Media Queries */
 @media (min-width: 768px) {
   :root {
     font-size: 18px;
@@ -89,7 +86,6 @@ button:focus-visible {
   }
 }
 
-/* Desktop */
 @media (min-width: 1024px) {
   :root {
     font-size: 20px;

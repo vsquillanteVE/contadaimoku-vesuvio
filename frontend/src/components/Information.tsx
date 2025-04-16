@@ -30,7 +30,6 @@ const Information: React.FC = () => {
   }, []);
   return (
     <div className="information-container">
-      <Logo className="main-logo" />
       <ul className="information-list" dangerouslySetInnerHTML={{ __html: objectivesContent }}></ul>
 
       <div className="message-container" dangerouslySetInnerHTML={{ __html: fullContent }}></div>
