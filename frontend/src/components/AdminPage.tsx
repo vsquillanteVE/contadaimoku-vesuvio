@@ -196,6 +196,8 @@ const AdminPage: React.FC = () => {
         </p>
       </header>
 
+      <div className="main-content">
+
       <form onSubmit={handleSubmit} className="admin-form">
         <div className="editor-section">
           <h3>Modifica gli obiettivi:</h3>
@@ -368,6 +370,8 @@ const AdminPage: React.FC = () => {
           )}
         </div>
       )}
+
+      </div>
 
       <div className="back-link">
         <a href="/">Torna alla home</a>
