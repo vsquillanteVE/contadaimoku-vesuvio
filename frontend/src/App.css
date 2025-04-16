@@ -725,10 +725,11 @@ body {
 }
 
 .login-form-group label {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: #4b5563;
   margin-left: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .login-input-container {
@@ -740,16 +741,16 @@ body {
 .login-input-icon {
   position: absolute;
   left: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: #6b7280;
 }
 
 .login-input {
   width: 100%;
-  padding: 0.9rem 1rem 0.9rem 3rem;
+  padding: 1rem 1rem 1rem 3rem;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 1.3rem;
   transition: all 0.3s;
   background-color: #f9fafb;
   color: #1f2937;
@@ -764,7 +765,7 @@ body {
 
 .login-input::placeholder {
   color: #9ca3af;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
 }
 
 .login-error {
@@ -787,9 +788,9 @@ body {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
-  padding: 1rem;
+  padding: 1.2rem;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 1.4rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
