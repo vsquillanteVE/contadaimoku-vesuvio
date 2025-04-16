@@ -200,14 +200,24 @@ body {
   background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 12px 16px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }
 
 .submit-button:hover {
   background-color: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 /* Admin Page Styles */
@@ -215,12 +225,26 @@ body {
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  padding: 1rem;
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+}
+
+.admin-header {
   background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.admin-header .logo-container {
+  margin-bottom: 1rem;
 }
 
 .admin-description {
-  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
   color: #666;
 }
 
@@ -228,76 +252,32 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .editor-container {
-  margin-bottom: 1.5rem;
-}
-
-.formatting-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 10px;
-  padding: 5px;
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
+  margin-bottom: 0.5rem;
   border-radius: 4px;
 }
 
-.formatting-buttons button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 30px;
-  height: 30px;
-  padding: 0 8px;
-  background-color: white;
+.editor-container .tox-tinymce {
+  border-radius: 4px;
   border: 1px solid #ddd;
-  border-radius: 3px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.formatting-buttons button:hover {
-  background-color: #f0f0f0;
-  border-color: #ccc;
-}
-
-.formatting-buttons button:active {
-  background-color: #e8e8e8;
-  transform: translateY(1px);
-}
-
-.full-content-input {
-  margin-top: 10px;
-  font-family: monospace;
-}
-
-.objectives-input {
-  margin-top: 10px;
-  font-family: monospace;
-}
-
-.wysiwyg-editor {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-.wysiwyg-editor .ql-editor {
-  min-height: 200px;
-  font-size: 14px;
-}
-
-.wysiwyg-editor .ql-toolbar {
-  border-radius: 4px 4px 0 0;
-  background-color: #f8f8f8;
-}
-
-.wysiwyg-editor .ql-container {
-  border-radius: 0 0 4px 4px;
-  font-family: inherit;
+.editor-container h3 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.1rem;
 }
 
 .logo-container {
@@ -331,10 +311,17 @@ body {
 
 .text-input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.text-input:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .password-input {
@@ -346,46 +333,55 @@ body {
 }
 
 .status-message {
-  padding: 10px;
+  padding: 12px 16px;
   border-radius: 4px;
   margin-bottom: 1rem;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .status-message.success {
   background-color: #d4edda;
   color: #155724;
+  border-left: 4px solid #155724;
 }
 
 .status-message.error {
   background-color: #f8d7da;
   color: #721c24;
+  border-left: 4px solid #721c24;
 }
 
 .admin-buttons {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .history-button {
   background-color: #6c757d;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 12px 16px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
+  font-weight: 500;
 }
 
 .history-button:hover {
   background-color: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .history-container {
   margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .history-list {
@@ -396,10 +392,17 @@ body {
 
 .history-item {
   margin-bottom: 1.5rem;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 1.2rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
   background-color: #f9f9f9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.history-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .history-content {
@@ -418,28 +421,34 @@ body {
   background-color: #17a2b8;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.8rem;
-  transition: background-color 0.3s;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  font-weight: 500;
 }
 
 .restore-button:hover {
   background-color: #138496;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .back-link {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   text-align: center;
 }
 
 .back-link a {
   color: #2196F3;
   text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
 }
 
 .back-link a:hover {
+  color: #0b7dda;
   text-decoration: underline;
 }
 
@@ -449,12 +458,35 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 1rem;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
   background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header .logo-container {
+  margin-bottom: 1.5rem;
 }
 
 .login-description {
+  margin-top: 1rem;
   margin-bottom: 1.5rem;
   color: #666;
+  font-size: 0.9rem;
 }
 
 .login-form {

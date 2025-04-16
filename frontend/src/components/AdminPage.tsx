@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LoginForm from './LoginForm';
 import { getMessage, updateMessage, getMessageHistory } from '../services/api';
 import { Editor } from '@tinymce/tinymce-react';
 import Logo from './Logo';
+import { Editor as TinyMCEEditor } from 'tinymce';
 
 interface MessageHistory {
   id: number;
@@ -12,11 +13,6 @@ interface MessageHistory {
   objectives_content?: string;
   created_at: string;
 }
-
-// Token API di TinyMCE
-const TINYMCE_API_KEY = '33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq';
-// URL del CDN di TinyMCE
-const TINYMCE_SCRIPT_SRC = 'https://cdn.tiny.cloud/1/33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq/tinymce/6/tinymce.min.js';
 
 const AdminPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -84,26 +80,9 @@ const AdminPage: React.FC = () => {
     setStatus('Versione precedente caricata nell\'editor. Clicca su "Aggiorna Messaggio" per salvare.');
   };
 
-  // Funzione per inserire tag HTML nel textarea degli obiettivi
-  const insertTag = (openTag: string, closeTag: string) => {
-    const textarea = document.querySelector('.objectives-input') as HTMLTextAreaElement;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = objectivesContent.substring(start, end);
-    const beforeText = objectivesContent.substring(0, start);
-    const afterText = objectivesContent.substring(end);
-
-    const newContent = beforeText + openTag + selectedText + closeTag + afterText;
-    setObjectivesContent(newContent);
-
-    // Rimetti il focus sul textarea
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + openTag.length, end + openTag.length);
-    }, 0);
-  };
+  // Riferimenti agli editor TinyMCE
+  const objectivesEditorRef = useRef<TinyMCEEditor | null>(null);
+  const contentEditorRef = useRef<TinyMCEEditor | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,66 +133,65 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className="admin-container">
-      <Logo />
-      <h1>Amministrazione</h1>
-      <p className="admin-description">
-        Benvenuto, {username}! Qui puoi modificare il messaggio principale visualizzato nella home page.
-      </p>
+      <div className="admin-header">
+        <Logo />
+        <h1>Amministrazione</h1>
+        <p className="admin-description">
+          Benvenuto, {username}! Qui puoi modificare il messaggio principale visualizzato nella home page.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="admin-form">
-        <div className="form-group">
-          <label htmlFor="message">Messaggio:</label>
+        <div className="editor-section">
+          <h3>Modifica gli obiettivi:</h3>
           <div className="editor-container">
-            <h3>Modifica gli obiettivi:</h3>
-            <div className="formatting-buttons">
-              <button type="button" onClick={() => insertTag('<li>', '</li>')} title="Elemento lista">
-                • Elemento
-              </button>
-              <button type="button" onClick={() => insertTag('<b>', '</b>')} title="Grassetto">
-                <strong>B</strong>
-              </button>
-              <button type="button" onClick={() => insertTag('<i>', '</i>')} title="Corsivo">
-                <i>I</i>
-              </button>
-              <button type="button" onClick={() => insertTag('<u>', '</u>')} title="Sottolineato">
-                <u>U</u>
-              </button>
-            </div>
-            <textarea
-              value={objectivesContent}
-              onChange={(e) => setObjectivesContent(e.target.value)}
-              className="message-input objectives-input"
-              rows={5}
+            <Editor
+              onInit={(evt, editor) => objectivesEditorRef.current = editor}
+              initialValue={objectivesContent}
+              onEditorChange={(content) => setObjectivesContent(content)}
+              init={{
+                height: 250,
+                menubar: false,
+                plugins: [
+                  'advlist', 'autolink', 'lists', 'link', 'charmap',
+                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                  'insertdatetime', 'table', 'help', 'wordcount'
+                ],
+                toolbar: 'undo redo | blocks | ' +
+                  'bold italic forecolor | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat | help',
+                content_style: 'body { font-family:Arial,sans-serif; font-size:14px }'
+              }}
             />
             <p className="help-text">
-              Inserisci gli obiettivi come elementi di lista (tag &lt;li&gt;). Questi verranno visualizzati come elenco puntato nella home page.
+              Inserisci gli obiettivi come elementi di lista. Questi verranno visualizzati come elenco puntato nella home page.
             </p>
+          </div>
 
-            <h3>Modifica il contenuto della pagina:</h3>
-            <div className="wysiwyg-editor">
-              <Editor
-                apiKey={TINYMCE_API_KEY}
-                tinymceScriptSrc={TINYMCE_SCRIPT_SRC}
-                init={{
-                  height: 400,
-                  menubar: true,
-                  plugins: [
-                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                    'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                    'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                  ],
-                  toolbar: 'undo redo | blocks | ' +
-                    'bold italic forecolor | alignleft aligncenter ' +
-                    'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'removeformat | help',
-                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                }}
-                value={fullContent}
-                onEditorChange={(content) => setFullContent(content)}
-              />
-            </div>
+          <h3>Modifica il contenuto della pagina:</h3>
+          <div className="editor-container">
+            <Editor
+              onInit={(evt, editor) => contentEditorRef.current = editor}
+              initialValue={fullContent}
+              onEditorChange={(content) => setFullContent(content)}
+              init={{
+                height: 400,
+                menubar: false,
+                plugins: [
+                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                  'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                ],
+                toolbar: 'undo redo | blocks | ' +
+                  'bold italic forecolor | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat | help',
+                content_style: 'body { font-family:Arial,sans-serif; font-size:14px }'
+              }}
+            />
             <p className="help-text">
-              Usa l'editor sopra per formattare il contenuto della pagina. Puoi aggiungere titoli, grassetto, corsivo, liste, immagini e link.
+              Inserisci il contenuto HTML della pagina. Puoi formattare il testo usando gli strumenti dell'editor.
             </p>
           </div>
         </div>
