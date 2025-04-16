@@ -742,6 +742,11 @@ body {
     padding: 2rem;
   }
 
+  /* Logo sempre a sinistra nella home page */
+  .logo-container {
+    justify-content: flex-start;
+  }
+
   .message-highlight {
     font-size: 1.2rem;
   }
