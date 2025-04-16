@@ -1,36 +1,33 @@
-// Script di build personalizzato che ignora completamente TypeScript
-// Esegue direttamente Vite senza il controllo TypeScript
+// Script di build personalizzato per Vercel
+const { execSync } = require('child_process');
+const fs = require('fs');
 
-import { execSync } from "child_process";
+console.log('🚀 Avvio del processo di build personalizzato');
 
-// Imposta le variabili d'ambiente per ignorare gli errori TypeScript
-process.env.TSC_COMPILE_ON_ERROR = "true";
-process.env.ESLINT_NO_DEV_ERRORS = "true";
-process.env.VITE_SKIP_TS_CHECK = "true";
-process.env.VITE_TSCONFIG_PATHS = "false";
-process.env.VITE_TS_TRANSPILE_ONLY = "true";
-process.env.NODE_ENV = "production";
+// Verifica se la directory node_modules esiste
+if (!fs.existsSync('node_modules')) {
+  console.log('📦 Installazione delle dipendenze...');
+  execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
+}
 
-console.log("Iniziando la build del frontend...");
-console.log("Ignorando completamente gli errori TypeScript...");
-
+// Esegui la build
 try {
-  // Rimuovi la cartella dist se esiste
-  try {
-    execSync("rm -rf dist", { stdio: "inherit" });
-  } catch (e) {
-    console.log("Nessuna cartella dist da rimuovere");
-  }
-
-  // Esegui la build di Vite direttamente senza controllo TypeScript
-  execSync("npx vite build --emptyOutDir", { 
-    stdio: "inherit",
-    env: process.env
-  });
-  
-  console.log("Build completata con successo!");
-  process.exit(0);
+  console.log('🔨 Esecuzione della build...');
+  execSync('npx vite build', { stdio: 'inherit' });
+  console.log('✅ Build completata con successo!');
 } catch (error) {
-  console.error("Errore durante la build:", error.message);
+  console.error('❌ Errore durante la build:', error.message);
   process.exit(1);
 }
+
+// Verifica se la directory dist esiste
+if (!fs.existsSync('dist')) {
+  console.error('❌ La directory dist non è stata creata. La build è fallita.');
+  process.exit(1);
+}
+
+console.log('📋 Contenuto della directory dist:');
+const distFiles = fs.readdirSync('dist');
+console.log(distFiles);
+
+console.log('🎉 Processo di build completato con successo!');
