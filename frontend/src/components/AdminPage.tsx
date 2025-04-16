@@ -13,6 +13,9 @@ interface MessageHistory {
   created_at: string;
 }
 
+// Token API di TinyMCE
+const TINYMCE_API_KEY = '33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq';
+
 const AdminPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [username, setUsername] = useState<string>('');
@@ -187,7 +190,7 @@ const AdminPage: React.FC = () => {
             <h3>Modifica il contenuto della pagina:</h3>
             <div className="wysiwyg-editor">
               <Editor
-                apiKey="no-api-key"
+                apiKey={TINYMCE_API_KEY}
                 init={{
                   height: 400,
                   menubar: true,
@@ -213,7 +216,6 @@ const AdminPage: React.FC = () => {
         </div>
 
         {status && <div className={`status-message ${status.includes('successo') ? 'success' : 'error'}`}>{status}</div>}
-
         <div className="admin-buttons">
           <button type="button" className="history-button" onClick={toggleHistory}>
             {showHistory ? 'Nascondi Cronologia' : 'Mostra Cronologia'}
