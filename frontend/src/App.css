@@ -50,6 +50,12 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 2;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.header:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 .logo-container {
@@ -280,72 +286,17 @@ body {
   overflow-y: auto;
 }
 
-.admin-header {
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  padding: 2rem;
-  margin-bottom: 2.5rem;
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+/* Stili header rimossi e unificati con .header */
 
-.admin-title-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-}
+/* Stile hover rimosso */
 
-.admin-header:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
+/* Stile h1 rimosso e unificato */
 
-.admin-header h1 {
-  margin-top: 0.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 2rem;
-}
+/* Stili logo rimossi e unificati */
 
-.admin-header .logo-container {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-}
+/* Media query rimossa e unificata */
 
-.admin-header .logo-image {
-  max-width: 100%;
-  height: auto;
-  max-height: 120px;
-}
-
-@media (min-width: 1024px) {
-  .admin-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .admin-title-section {
-    flex-direction: row;
-    align-items: center;
-  }
-  .admin-header .logo-container {
-    justify-content: flex-start;
-    margin-right: 2rem;
-    margin-bottom: 0;
-  }
-  .admin-header h1 {
-    margin-top: 0;
-  }
-}
-
-.admin-description {
+.admin-description, .login-description {
   margin-top: 1rem;
   margin-bottom: 0;
   color: #6c757d;
@@ -685,56 +636,15 @@ body {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
-.login-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
+/* Stili login header rimossi e unificati */
 
-.login-title-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-}
+/* Stile h2 rimosso e unificato */
 
-.login-header h2 {
-  margin-top: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 1.8rem;
-}
+/* Stili logo rimossi e unificati */
 
-.login-header .logo-container {
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: center;
-}
+/* Media query rimossa e unificata */
 
-.login-header .logo-image {
-  max-width: 100%;
-  height: auto;
-  max-height: 80px;
-}
-
-@media (min-width: 1024px) {
-  .login-title-section {
-    flex-direction: row;
-    align-items: center;
-  }
-  .login-header .logo-container {
-    justify-content: flex-start;
-    margin-right: 2rem;
-    margin-bottom: 0;
-  }
-}
-
-.login-description {
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
-  color: #6c757d;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
+/* Stile login description rimosso e unificato */
 
 .login-form {
   display: flex;

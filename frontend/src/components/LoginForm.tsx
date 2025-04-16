@@ -41,15 +41,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-header">
-          <div className="login-title-section">
-            <Logo />
-            <h2>Accesso Amministratore</h2>
+        <header className="header">
+          <div className="logo-container">
+            <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="logo-image" />
+            <h1>Accesso Amministratore</h1>
           </div>
           <p className="login-description">
             Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Capitolo Litorale Vesuviano.
           </p>
-        </div>
+        </header>
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">

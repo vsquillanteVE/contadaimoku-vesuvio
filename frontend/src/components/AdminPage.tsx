@@ -133,16 +133,16 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className="admin-container">
-      <div className="admin-header">
-        <div className="admin-title-section">
-          <Logo />
+      <header className="header">
+        <div className="logo-container">
+          <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="logo-image" />
           <h1>Amministrazione</h1>
         </div>
         <p className="admin-description">
           Benvenuto, {username}!<br />
           Qui puoi modificare il messaggio principale visualizzato nella home page.
         </p>
-      </div>
+      </header>
 
       <form onSubmit={handleSubmit} className="admin-form">
         <div className="editor-section">
