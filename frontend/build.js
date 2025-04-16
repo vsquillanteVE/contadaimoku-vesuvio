@@ -1,11 +1,17 @@
 // Script di build personalizzato per Vercel
-const { execSync } = require('child_process');
-const fs = require('fs');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Ottieni il percorso corrente
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('🚀 Avvio del processo di build personalizzato');
 
 // Verifica se la directory node_modules esiste
-if (!fs.existsSync('node_modules')) {
+if (!fs.existsSync(path.join(__dirname, 'node_modules'))) {
   console.log('📦 Installazione delle dipendenze...');
   execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
 }
@@ -21,13 +27,13 @@ try {
 }
 
 // Verifica se la directory dist esiste
-if (!fs.existsSync('dist')) {
+if (!fs.existsSync(path.join(__dirname, 'dist'))) {
   console.error('❌ La directory dist non è stata creata. La build è fallita.');
   process.exit(1);
 }
 
 console.log('📋 Contenuto della directory dist:');
-const distFiles = fs.readdirSync('dist');
+const distFiles = fs.readdirSync(path.join(__dirname, 'dist'));
 console.log(distFiles);
 
 console.log('🎉 Processo di build completato con successo!');
