@@ -1,12 +1,13 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Carica le variabili d'ambiente
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '../../../.env') });
+dotenv.config();
+
+// Stampa le variabili d'ambiente per debug
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+console.log('PGHOST:', process.env.PGHOST || 'Not set');
 
 // Crea un pool di connessioni
 const pool = new Pool({
@@ -183,7 +184,7 @@ class PostgresDBService {
       if (result.rows.length === 0) {
         throw new Error('No message found');
       }
-      
+
       const row = result.rows[0];
       return {
         content: row.content,
@@ -209,7 +210,7 @@ class PostgresDBService {
     try {
       // Ottieni il messaggio corrente
       const currentMessage = await this.getMessage();
-      
+
       // Aggiungi il messaggio corrente alla cronologia
       await pool.query(`
         INSERT INTO message_history (content, html_content, full_content, objectives_content)
@@ -220,13 +221,13 @@ class PostgresDBService {
         currentMessage.fullContent,
         currentMessage.objectivesContent
       ]);
-      
+
       // Aggiorna il messaggio
       await pool.query(`
         UPDATE message
         SET content = $1, html_content = $2, full_content = $3, objectives_content = $4
       `, [content, htmlContent, fullContent, objectivesContent]);
-      
+
       return {
         content,
         htmlContent,
@@ -251,7 +252,7 @@ class PostgresDBService {
         ORDER BY created_at DESC
         LIMIT $1
       `, [limit]);
-      
+
       return result.rows.map(row => ({
         id: row.id,
         content: row.content,
@@ -278,11 +279,11 @@ class PostgresDBService {
         SELECT * FROM users
         WHERE username = $1 AND password = $2
       `, [username, password]);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         id: row.id,

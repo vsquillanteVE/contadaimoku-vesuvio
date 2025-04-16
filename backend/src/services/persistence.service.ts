@@ -1,11 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { Message, MessageHistoryItem, User } from './db.service';
 
 // Ottieni il percorso corrente
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 
 // Percorso del file di persistenza
 const DATA_FILE = process.env.DATA_FILE || path.join(__dirname, '../../data/db.json');
@@ -62,7 +60,7 @@ class PersistenceService {
     } catch (error) {
       console.error('Error loading data:', error);
     }
-    
+
     // Se il file non esiste o c'è un errore, restituisci i dati di default
     return { ...defaultData };
   }
@@ -111,7 +109,7 @@ class PersistenceService {
         created_at: new Date().toISOString()
       });
     }
-    
+
     this.data.message = message;
     this.saveData();
   }
