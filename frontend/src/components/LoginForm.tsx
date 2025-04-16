@@ -42,8 +42,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <Logo />
-          <h2>Accesso Amministratore</h2>
+          <div className="login-title-section">
+            <Logo />
+            <h2>Accesso Amministratore</h2>
+          </div>
           <p className="login-description">
             Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Capitolo Litorale Vesuviano.
           </p>

@@ -83,18 +83,11 @@ body {
 .counter-display {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 2;
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
-  background-size: 30px 30px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .counter-value {
@@ -301,6 +294,13 @@ body {
   align-items: center;
 }
 
+.admin-title-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .admin-header:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
@@ -327,9 +327,13 @@ body {
 
 @media (min-width: 1024px) {
   .admin-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .admin-title-section {
     flex-direction: row;
     align-items: center;
-    text-align: left;
   }
   .admin-header .logo-container {
     justify-content: flex-start;
@@ -686,6 +690,13 @@ body {
   margin-bottom: 2.5rem;
 }
 
+.login-title-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .login-header h2 {
   margin-top: 1.5rem;
   font-weight: 600;
@@ -706,8 +717,14 @@ body {
 }
 
 @media (min-width: 1024px) {
+  .login-title-section {
+    flex-direction: row;
+    align-items: center;
+  }
   .login-header .logo-container {
     justify-content: flex-start;
+    margin-right: 2rem;
+    margin-bottom: 0;
   }
 }
 

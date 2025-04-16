@@ -134,8 +134,10 @@ const AdminPage: React.FC = () => {
   return (
     <div className="admin-container">
       <div className="admin-header">
-        <Logo />
-        <h1>Amministrazione</h1>
+        <div className="admin-title-section">
+          <Logo />
+          <h1>Amministrazione</h1>
+        </div>
         <p className="admin-description">
           Benvenuto, {username}!<br />
           Qui puoi modificare il messaggio principale visualizzato nella home page.
