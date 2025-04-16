@@ -1,7 +1,8 @@
 {
-  "buildCommand": "cd frontend && npm install && npm run build",
+  "buildCommand": "cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/backend/dist/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -14,5 +15,23 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "postgres://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
+    "DATABASE_URL_UNPOOLED": "postgresql://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw.us-east-2.aws.neon.tech/neondb?sslmode=require",
+    "PGHOST": "ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech",
+    "PGHOST_UNPOOLED": "ep-holy-breeze-a5vu69xw.us-east-2.aws.neon.tech",
+    "PGUSER": "neondb_owner",
+    "PGDATABASE": "neondb",
+    "PGPASSWORD": "npg_LX1pK5triPfQ",
+    "POSTGRES_URL": "postgres://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_URL_NON_POOLING": "postgres://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw.us-east-2.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_USER": "neondb_owner",
+    "POSTGRES_HOST": "ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech",
+    "POSTGRES_PASSWORD": "npg_LX1pK5triPfQ",
+    "POSTGRES_DATABASE": "neondb",
+    "POSTGRES_URL_NO_SSL": "postgres://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech/neondb",
+    "POSTGRES_PRISMA_URL": "postgres://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech/neondb?connect_timeout=15&sslmode=require",
+    "VERCEL": "1"
+  }
 }
