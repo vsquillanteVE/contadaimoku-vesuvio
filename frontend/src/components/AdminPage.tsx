@@ -162,7 +162,7 @@ const AdminPage: React.FC = () => {
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
                   'removeformat | help',
-                content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:14px }',
+                content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:18px }',
                 skin: 'oxide',
                 promotion: false,
                 statusbar: false,
@@ -193,7 +193,7 @@ const AdminPage: React.FC = () => {
                   'bold italic forecolor | alignleft aligncenter ' +
                   'alignright alignjustify | bullist numlist outdent indent | ' +
                   'removeformat | help',
-                content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:14px }',
+                content_style: 'body { font-family:"Segoe UI","Roboto","Helvetica Neue",sans-serif; font-size:18px }',
                 skin: 'oxide',
                 promotion: false,
                 statusbar: false,
