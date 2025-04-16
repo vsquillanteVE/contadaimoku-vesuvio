@@ -2,18 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.js",
+      "src": "src/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "src/index.js"
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "postgres://neondb_owner:npg_LX1pK5triPfQ@ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
+    "PGHOST": "ep-holy-breeze-a5vu69xw-pooler.us-east-2.aws.neon.tech",
+    "PGUSER": "neondb_owner",
+    "PGDATABASE": "neondb",
+    "PGPASSWORD": "npg_LX1pK5triPfQ"
+  }
 }
