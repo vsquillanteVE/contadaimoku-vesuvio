@@ -15,6 +15,8 @@ interface MessageHistory {
 
 // Token API di TinyMCE
 const TINYMCE_API_KEY = '33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq';
+// URL del CDN di TinyMCE
+const TINYMCE_SCRIPT_SRC = 'https://cdn.tiny.cloud/1/33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq/tinymce/6/tinymce.min.js';
 
 const AdminPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -191,6 +193,7 @@ const AdminPage: React.FC = () => {
             <div className="wysiwyg-editor">
               <Editor
                 apiKey={TINYMCE_API_KEY}
+                tinymceScriptSrc={TINYMCE_SCRIPT_SRC}
                 init={{
                   height: 400,
                   menubar: true,
