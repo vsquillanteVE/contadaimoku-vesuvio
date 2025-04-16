@@ -5,9 +5,8 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="logo-container">
         <img src="/logo.png" alt="Logo" className="logo" />
-        <h1>Conta Daimoku</h1>
+        <h1>Conta Daimoku Capitolo Litorale Vesuviano</h1>
       </div>
-      <h2>Conta Daimoku Vesuvio</h2>
     </header>
   );
 };

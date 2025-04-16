@@ -149,6 +149,7 @@ const AdminPage: React.FC = () => {
               onInit={(evt, editor) => objectivesEditorRef.current = editor}
               initialValue={objectivesContent}
               onEditorChange={(content) => setObjectivesContent(content)}
+              apiKey="33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq"
               init={{
                 height: 250,
                 menubar: false,
@@ -179,6 +180,7 @@ const AdminPage: React.FC = () => {
               onInit={(evt, editor) => contentEditorRef.current = editor}
               initialValue={fullContent}
               onEditorChange={(content) => setFullContent(content)}
+              apiKey="33wgnmi1idh0idd4g7obb8eqhq8c68y3ce8mn2yh6ld2xiuq"
               init={{
                 height: 400,
                 menubar: false,

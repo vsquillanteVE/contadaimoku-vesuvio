@@ -35,7 +35,7 @@ const Information: React.FC = () => {
       <div className="message-container" dangerouslySetInnerHTML={{ __html: fullContent }}></div>
 
       <footer className="footer">
-        <p>Vesuvio</p>
+        <p>Capitolo Litorale Vesuviano</p>
         <div className="admin-link">
           <Link to="/admin-vesuvio">Amministrazione</Link>
         </div>
