@@ -1,0 +1,4 @@
+# Ignora tutti i file nella directory data
+*
+# Tranne questo file
+!.gitignore
