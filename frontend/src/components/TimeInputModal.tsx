@@ -44,13 +44,17 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
 
   // Gestisce il cambio del valore delle ore
   const handleHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
+    // Rimuove lo zero iniziale e converte in numero
+    const inputValue = e.target.value.replace(/^0+/, '');
+    const value = inputValue === '' ? 0 : parseInt(inputValue);
     setHours(isNaN(value) ? 0 : value);
   };
 
   // Gestisce il cambio del valore dei minuti
   const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
+    // Rimuove lo zero iniziale e converte in numero
+    const inputValue = e.target.value.replace(/^0+/, '');
+    const value = inputValue === '' ? 0 : parseInt(inputValue);
     setMinutes(isNaN(value) ? 0 : value);
   };
 
@@ -101,9 +105,10 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
             id="hours"
             type="number"
             min="0"
-            value={hours}
+            value={hours || ''}
             onChange={handleHoursChange}
             className="time-input"
+            placeholder="0"
           />
         </div>
 
@@ -114,9 +119,10 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({ isOpen, onRequestClose,
             type="number"
             min="0"
             max="59"
-            value={minutes}
+            value={minutes || ''}
             onChange={handleMinutesChange}
             className="time-input"
+            placeholder="0"
           />
         </div>
 
