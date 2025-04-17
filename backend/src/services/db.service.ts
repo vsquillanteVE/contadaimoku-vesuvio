@@ -1,8 +1,8 @@
 // Importa il servizio PostgreSQL
-import { postgresDBService, Message, User, MessageHistoryItem } from './db.postgres.service';
+import { postgresDBService, Message, User, MessageHistoryItem, DaimokuLogItem } from './db.postgres.service';
 
 // Esporta le interfacce
-export { Message, User, MessageHistoryItem };
+export { Message, User, MessageHistoryItem, DaimokuLogItem };
 
 /**
  * Classe per gestire le operazioni sul database
@@ -19,10 +19,11 @@ class DBService {
   /**
    * Incrementa il conteggio
    * @param amount Quantità da incrementare (default: 1)
+   * @param clientInfo Informazioni sul client (opzionale)
    * @returns Il nuovo conteggio
    */
-  async incrementCount(amount: number = 1): Promise<number> {
-    return postgresDBService.incrementCount(amount);
+  async incrementCount(amount: number = 1, clientInfo: string = ''): Promise<number> {
+    return postgresDBService.incrementCount(amount, clientInfo);
   }
 
   /**
@@ -70,6 +71,24 @@ class DBService {
    */
   async authenticateUser(username: string, password: string): Promise<User | null> {
     return postgresDBService.authenticateUser(username, password);
+  }
+
+  /**
+   * Ottiene la cronologia dei log di daimoku
+   * @param limit Numero massimo di log da restituire (default: 100)
+   * @param offset Offset per la paginazione (default: 0)
+   * @returns La cronologia dei log di daimoku
+   */
+  async getDaimokuLogs(limit: number = 100, offset: number = 0): Promise<DaimokuLogItem[]> {
+    return postgresDBService.getDaimokuLogs(limit, offset);
+  }
+
+  /**
+   * Ottiene statistiche sui log di daimoku
+   * @returns Statistiche sui log di daimoku
+   */
+  async getDaimokuStats(): Promise<{ total: number, totalHours: number, totalMinutes: number, successCount: number, errorCount: number }> {
+    return postgresDBService.getDaimokuStats();
   }
 }
 

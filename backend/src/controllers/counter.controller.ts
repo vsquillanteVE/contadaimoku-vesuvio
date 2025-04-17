@@ -28,7 +28,16 @@ export class CounterController {
   async incrementCount(req: Request, res: Response): Promise<void> {
     try {
       const amount = req.body.amount ? parseInt(req.body.amount) : 1;
-      const count = await dbService.incrementCount(amount);
+
+      // Raccogli informazioni sul client
+      const clientInfo = JSON.stringify({
+        ip: req.ip || req.socket.remoteAddress,
+        userAgent: req.headers['user-agent'],
+        referer: req.headers.referer,
+        timestamp: new Date().toISOString()
+      });
+
+      const count = await dbService.incrementCount(amount, clientInfo);
       res.json({ count });
     } catch (error) {
       console.error('Error incrementing count:', error);
@@ -47,6 +56,68 @@ export class CounterController {
       res.json({ success: result });
     } catch (error) {
       console.error('Error resetting count:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Ottiene la cronologia dei log di daimoku
+   * @param req Richiesta Express
+   * @param res Risposta Express
+   */
+  async getDaimokuLogs(req: Request, res: Response): Promise<void> {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+      const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+
+      const logs = await dbService.getDaimokuLogs(limit, offset);
+      res.json({ logs });
+    } catch (error) {
+      console.error('Error getting daimoku logs:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Ottiene statistiche sui log di daimoku
+   * @param req Richiesta Express
+   * @param res Risposta Express
+   */
+  async getDaimokuStats(req: Request, res: Response): Promise<void> {
+    try {
+      const stats = await dbService.getDaimokuStats();
+      res.json({ stats });
+    } catch (error) {
+      console.error('Error getting daimoku stats:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  /**
+   * Esporta i log di daimoku in formato CSV
+   * @param req Richiesta Express
+   * @param res Risposta Express
+   */
+  async exportDaimokuLogs(req: Request, res: Response): Promise<void> {
+    try {
+      const logs = await dbService.getDaimokuLogs(10000, 0); // Ottieni fino a 10000 log
+
+      // Crea l'intestazione del CSV
+      let csv = 'ID,Amount,Hours,Minutes,Total Minutes,Status,Created At\n';
+
+      // Aggiungi ogni log al CSV
+      logs.forEach(log => {
+        csv += `${log.id},${log.amount},${log.hours},${log.minutes},${log.total_minutes},"${log.status}","${log.created_at}"\n`;
+      });
+
+      // Imposta gli header per il download del file
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=daimoku_logs.csv');
+
+      // Invia il CSV
+      res.send(csv);
+    } catch (error) {
+      console.error('Error exporting daimoku logs:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

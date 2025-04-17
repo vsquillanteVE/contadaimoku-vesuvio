@@ -40,6 +40,17 @@ export interface MessageHistoryItem {
   created_at: string;
 }
 
+export interface DaimokuLogItem {
+  id: number;
+  amount: number;
+  hours: number;
+  minutes: number;
+  total_minutes: number;
+  client_info: string;
+  status: string;
+  created_at: string;
+}
+
 /**
  * Classe per gestire le operazioni sul database PostgreSQL
  */
@@ -86,6 +97,20 @@ class PostgresDBService {
           id SERIAL PRIMARY KEY,
           username TEXT NOT NULL UNIQUE,
           password TEXT NOT NULL
+        )
+      `);
+
+      // Crea la tabella daimoku_log se non esiste
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS daimoku_log (
+          id SERIAL PRIMARY KEY,
+          amount INTEGER NOT NULL,
+          hours INTEGER NOT NULL,
+          minutes INTEGER NOT NULL,
+          total_minutes INTEGER NOT NULL,
+          client_info TEXT,
+          status TEXT NOT NULL,
+          created_at TIMESTAMP NOT NULL DEFAULT NOW()
         )
       `);
 
@@ -145,18 +170,61 @@ class PostgresDBService {
   /**
    * Incrementa il conteggio
    * @param amount Quantità da incrementare (default: 1)
+   * @param clientInfo Informazioni sul client (opzionale)
    * @returns Il nuovo conteggio
    */
-  async incrementCount(amount: number = 1): Promise<number> {
+  async incrementCount(amount: number = 1, clientInfo: string = ''): Promise<number> {
+    const client = await pool.connect();
     try {
-      const result = await pool.query(
+      // Inizia una transazione
+      await client.query('BEGIN');
+
+      // Incrementa il contatore
+      const result = await client.query(
         'UPDATE counter SET value = value + $1 RETURNING value',
         [amount]
       );
-      return result.rows[0]?.value || 0;
+
+      const newCount = result.rows[0]?.value || 0;
+
+      // Calcola ore e minuti
+      const hours = Math.floor(amount / 60);
+      const minutes = amount % 60;
+
+      // Registra l'operazione nel log
+      await client.query(
+        `INSERT INTO daimoku_log
+        (amount, hours, minutes, total_minutes, client_info, status)
+        VALUES ($1, $2, $3, $4, $5, $6)`,
+        [amount, hours, minutes, amount, clientInfo, 'success']
+      );
+
+      // Commit della transazione
+      await client.query('COMMIT');
+
+      return newCount;
     } catch (error) {
+      // Rollback in caso di errore
+      await client.query('ROLLBACK');
       console.error('Error incrementing count:', error);
+
+      // Tenta di registrare l'errore nel log
+      try {
+        const errorMessage = error instanceof Error ? error.message : 'unknown error';
+        await pool.query(
+          `INSERT INTO daimoku_log
+          (amount, hours, minutes, total_minutes, client_info, status)
+          VALUES ($1, $2, $3, $4, $5, $6)`,
+          [amount, Math.floor(amount / 60), amount % 60, amount, clientInfo, `error: ${errorMessage}`]
+        );
+      } catch (logError) {
+        console.error('Error logging failed operation:', logError);
+      }
+
       throw error;
+    } finally {
+      // Rilascia il client
+      client.release();
     }
   }
 
@@ -292,6 +360,69 @@ class PostgresDBService {
       };
     } catch (error) {
       console.error('Error authenticating user:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ottiene la cronologia dei log di daimoku
+   * @param limit Numero massimo di log da restituire (default: 100)
+   * @param offset Offset per la paginazione (default: 0)
+   * @returns La cronologia dei log di daimoku
+   */
+  async getDaimokuLogs(limit: number = 100, offset: number = 0): Promise<DaimokuLogItem[]> {
+    try {
+      const result = await pool.query(`
+        SELECT * FROM daimoku_log
+        ORDER BY created_at DESC
+        LIMIT $1 OFFSET $2
+      `, [limit, offset]);
+
+      return result.rows.map(row => ({
+        id: row.id,
+        amount: row.amount,
+        hours: row.hours,
+        minutes: row.minutes,
+        total_minutes: row.total_minutes,
+        client_info: row.client_info,
+        status: row.status,
+        created_at: row.created_at.toISOString()
+      }));
+    } catch (error) {
+      console.error('Error getting daimoku logs:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ottiene statistiche sui log di daimoku
+   * @returns Statistiche sui log di daimoku
+   */
+  async getDaimokuStats(): Promise<{ total: number, totalHours: number, totalMinutes: number, successCount: number, errorCount: number }> {
+    try {
+      // Ottieni il totale dei minuti di daimoku
+      const totalResult = await pool.query(`
+        SELECT
+          SUM(total_minutes) as total_minutes,
+          COUNT(*) as total_count,
+          COUNT(CASE WHEN status = 'success' THEN 1 END) as success_count,
+          COUNT(CASE WHEN status != 'success' THEN 1 END) as error_count
+        FROM daimoku_log
+      `);
+
+      const totalMinutes = parseInt(totalResult.rows[0]?.total_minutes) || 0;
+      const totalHours = Math.floor(totalMinutes / 60);
+      const remainingMinutes = totalMinutes % 60;
+
+      return {
+        total: totalMinutes,
+        totalHours: totalHours,
+        totalMinutes: remainingMinutes,
+        successCount: parseInt(totalResult.rows[0]?.success_count) || 0,
+        errorCount: parseInt(totalResult.rows[0]?.error_count) || 0
+      };
+    } catch (error) {
+      console.error('Error getting daimoku stats:', error);
       throw error;
     }
   }
