@@ -36,8 +36,8 @@ body {
   overflow-y: auto;
   background-image: url('/logo.png');
   background-repeat: no-repeat;
-  background-position: center 30%; /* Spostato verso l'alto per centrare nella zona del contatore */
-  background-size: 80%; /* Aumentato leggermente per una migliore visibilità */
+  background-position: center 20%; /* Spostato ancora più in alto */
+  background-size: 80%;
   background-attachment: fixed;
   background-blend-mode: soft-light;
   background-color: rgba(255, 255, 255, 0.85);
@@ -331,8 +331,8 @@ body {
   background-color: #f8f9fa;
   background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%), url('/logo.png');
   background-repeat: no-repeat;
-  background-position: center 30%; /* Spostato verso l'alto per centrare nella zona del contatore */
-  background-size: 80%; /* Aumentato leggermente per una migliore visibilità */
+  background-position: center 20%; /* Spostato ancora più in alto */
+  background-size: 80%;
   background-attachment: fixed;
   background-blend-mode: soft-light;
   display: flex;
@@ -435,7 +435,6 @@ body {
   background-color: white;
   padding: 2px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: none; /* Nascosto su mobile */
 }
 
 /* Rimuoviamo lo stile del logo nella sezione Information */
@@ -998,7 +997,6 @@ body {
     left: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
-    display: block; /* Mostrato su desktop */
   }
 
   .title-container {
