@@ -117,6 +117,16 @@ Il database PostgreSQL è ospitato su Neon e contiene le seguenti tabelle:
   - `id`: Identificativo univoco (SERIAL PRIMARY KEY)
   - `value`: Valore del contatore (INTEGER NOT NULL DEFAULT 0)
 
+- **daimoku_log**: Memorizza i log dei conteggi di daimoku.
+  - `id`: Identificativo univoco (SERIAL PRIMARY KEY)
+  - `amount`: Quantità di daimoku aggiunta (INTEGER NOT NULL)
+  - `hours`: Ore di daimoku (INTEGER NOT NULL)
+  - `minutes`: Minuti di daimoku (INTEGER NOT NULL)
+  - `total_minutes`: Minuti totali (INTEGER NOT NULL)
+  - `client_info`: Informazioni sul client (TEXT)
+  - `status`: Stato dell'operazione (TEXT NOT NULL)
+  - `created_at`: Data di creazione (TIMESTAMP NOT NULL DEFAULT NOW())
+
 - **message**: Memorizza il messaggio attuale.
   - `id`: Identificativo univoco (SERIAL PRIMARY KEY)
   - `content`: Contenuto del messaggio (TEXT NOT NULL)
@@ -142,6 +152,25 @@ Il database PostgreSQL è ospitato su Neon e contiene le seguenti tabelle:
 L'autenticazione è gestita tramite username e password. Le credenziali vengono inviate nel corpo della richiesta e verificate contro il database. Se le credenziali sono valide, viene restituito un oggetto utente.
 
 **Nota**: Questa implementazione è semplice e non utilizza token JWT o altre tecniche di autenticazione più avanzate. In un ambiente di produzione, sarebbe consigliabile utilizzare tecniche più sicure.
+
+### Persistenza dei dati
+
+L'applicazione implementa meccanismi robusti per garantire la persistenza dei dati, in particolare per i conteggi di daimoku:
+
+1. **Transazioni atomiche**: Ogni operazione di incremento del contatore viene eseguita all'interno di una transazione atomica che include sia l'aggiornamento del contatore che la registrazione nel log.
+
+2. **Gestione degli errori**: In caso di errore durante l'incremento del contatore, viene eseguito un rollback della transazione e l'errore viene registrato nel log.
+
+3. **Log dettagliati**: Ogni operazione di incremento viene registrata con dettagli completi, inclusi:
+   - Quantità di daimoku aggiunta
+   - Conversione in formato ore:minuti
+   - Informazioni sul client (IP, user agent, referrer)
+   - Timestamp dell'operazione
+   - Stato dell'operazione (successo o errore)
+
+4. **Backup automatici**: Il database Neon PostgreSQL esegue backup automatici per garantire che i dati non vengano mai persi.
+
+5. **Esportazione dei dati**: È possibile esportare i log in formato CSV per l'analisi offline o il backup manuale.
 
 ## Frontend
 

@@ -89,7 +89,7 @@ Incrementa il contatore.
 **Parametri**:
 
 | Nome   | Tipo   | Descrizione                                | Obbligatorio |
-|--------|--------|--------------------------------------------|--------------| 
+|--------|--------|--------------------------------------------|--------------|
 | amount | number | Quantità da incrementare (default: 1)      | No           |
 
 **Esempio di richiesta**:
@@ -122,6 +122,64 @@ Resetta il contatore a 0.
 }
 ```
 
+#### GET /count/logs
+
+Ottiene la cronologia dei log di daimoku.
+
+**Parametri**:
+
+| Nome   | Tipo   | Descrizione                                      | Obbligatorio |
+|--------|--------|--------------------------------------------------|--------------|
+| limit  | number | Numero massimo di log da restituire (default: 100) | No           |
+| offset | number | Offset per la paginazione (default: 0)           | No           |
+
+**Risposta**:
+
+```json
+{
+  "logs": [
+    {
+      "id": 1,
+      "amount": 30,
+      "hours": 0,
+      "minutes": 30,
+      "total_minutes": 30,
+      "client_info": "{\"ip\":\"127.0.0.1\",\"userAgent\":\"Mozilla/5.0...\",\"referer\":\"http://localhost:5173/\",\"timestamp\":\"2023-06-15T10:30:00.000Z\"}",
+      "status": "success",
+      "created_at": "2023-06-15T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+#### GET /count/stats
+
+Ottiene statistiche sui log di daimoku.
+
+**Parametri**: Nessuno
+
+**Risposta**:
+
+```json
+{
+  "stats": {
+    "total": 1200,
+    "totalHours": 20,
+    "totalMinutes": 0,
+    "successCount": 40,
+    "errorCount": 2
+  }
+}
+```
+
+#### GET /count/export
+
+Esporta i log di daimoku in formato CSV.
+
+**Parametri**: Nessuno
+
+**Risposta**: File CSV con i log di daimoku.
+
 ### Messaggio
 
 #### GET /message
@@ -150,7 +208,7 @@ Aggiorna il messaggio (richiede autenticazione).
 **Parametri**:
 
 | Nome               | Tipo   | Descrizione                                | Obbligatorio |
-|--------------------|--------|--------------------------------------------|--------------| 
+|--------------------|--------|--------------------------------------------|--------------|
 | content            | string | Contenuto del messaggio                    | Sì           |
 | htmlContent        | string | Contenuto HTML del messaggio               | Sì           |
 | fullContent        | string | Contenuto completo del messaggio           | Sì           |
@@ -191,7 +249,7 @@ Ottiene la cronologia dei messaggi.
 **Parametri**:
 
 | Nome  | Tipo   | Descrizione                                      | Obbligatorio |
-|-------|--------|--------------------------------------------------|--------------| 
+|-------|--------|--------------------------------------------------|--------------|
 | limit | number | Numero massimo di messaggi da restituire (default: 10) | No           |
 
 **Risposta**:
@@ -220,7 +278,7 @@ Autentica un utente.
 **Parametri**:
 
 | Nome     | Tipo   | Descrizione                                | Obbligatorio |
-|----------|--------|--------------------------------------------|--------------| 
+|----------|--------|--------------------------------------------|--------------|
 | username | string | Nome utente                                | Sì           |
 | password | string | Password                                   | Sì           |
 
@@ -249,7 +307,7 @@ Autentica un utente.
 ### Message
 
 | Campo              | Tipo   | Descrizione                                |
-|--------------------|--------|--------------------------------------------| 
+|--------------------|--------|--------------------------------------------|
 | content            | string | Contenuto del messaggio                    |
 | htmlContent        | string | Contenuto HTML del messaggio               |
 | fullContent        | string | Contenuto completo del messaggio           |
@@ -258,7 +316,7 @@ Autentica un utente.
 ### MessageHistoryItem
 
 | Campo               | Tipo   | Descrizione                                |
-|---------------------|--------|--------------------------------------------| 
+|---------------------|--------|--------------------------------------------|
 | id                  | number | Identificativo univoco                     |
 | content             | string | Contenuto del messaggio                    |
 | html_content        | string | Contenuto HTML del messaggio               |
@@ -269,7 +327,7 @@ Autentica un utente.
 ### User
 
 | Campo     | Tipo   | Descrizione                                |
-|-----------|--------|--------------------------------------------| 
+|-----------|--------|--------------------------------------------|
 | id        | number | Identificativo univoco                     |
 | username  | string | Nome utente                                |
 
@@ -288,7 +346,7 @@ Autentica un utente.
 In caso di errore, l'API restituisce un oggetto JSON con i seguenti campi:
 
 | Campo   | Tipo   | Descrizione                                |
-|---------|--------|--------------------------------------------| 
+|---------|--------|--------------------------------------------|
 | error   | string | Descrizione dell'errore                    |
 | message | string | Messaggio dettagliato dell'errore (opzionale) |
 

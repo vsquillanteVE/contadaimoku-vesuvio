@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { dbService } from '../services/db.service';
+import { backupService } from '../services/backup.service';
 
 /**
  * Controller per gestire le operazioni sul contatore
@@ -37,12 +38,33 @@ export class CounterController {
         timestamp: new Date().toISOString()
       });
 
+      // Incrementa il contatore
       const count = await dbService.incrementCount(amount, clientInfo);
+
+      // Esegui un backup automatico in background
+      this.triggerAutomaticBackup();
+
+      // Restituisci il risultato
       res.json({ count });
     } catch (error) {
       console.error('Error incrementing count:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
+  }
+
+  /**
+   * Esegue un backup automatico in background
+   * @private
+   */
+  private triggerAutomaticBackup(): void {
+    // Esegui il backup in modo asincrono senza attendere il completamento
+    backupService.backupDaimokuLogs()
+      .then(filePath => {
+        console.log(`Automatic backup created successfully: ${filePath}`);
+      })
+      .catch(error => {
+        console.error('Error creating automatic backup:', error);
+      });
   }
 
   /**
