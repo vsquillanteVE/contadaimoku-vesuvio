@@ -42,13 +42,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     <div className="login-container">
       <div className="login-fullscreen">
         <div className="login-header">
-          <div className="login-logo-container">
-            <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="login-logo-image" />
+          <div className="logo-container">
+            <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="logo-image" />
+            <div className="title-container">
+              <h1 className="main-title">Accesso Amministratore</h1>
+              <p className="login-description">
+                Inserisci le tue credenziali per accedere all'area di amministrazione.
+              </p>
+            </div>
           </div>
-          <h1 className="login-title">Accesso Amministratore</h1>
-          <p className="login-description">
-            Inserisci le tue credenziali per accedere all'area di amministrazione del sito Conta Daimoku Capitolo Litorale Vesuviano.
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
