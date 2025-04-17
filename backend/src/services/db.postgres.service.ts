@@ -8,6 +8,9 @@ dotenv.config();
 // Stampa le variabili d'ambiente per debug
 console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
 console.log('PGHOST:', process.env.PGHOST || 'Not set');
+console.log('PGUSER:', process.env.PGUSER || 'Not set');
+console.log('PGDATABASE:', process.env.PGDATABASE || 'Not set');
+console.log('PGPASSWORD:', process.env.PGPASSWORD ? 'Set' : 'Not set');
 
 // Crea un pool di connessioni
 const pool = new Pool({
@@ -48,6 +51,13 @@ export interface DaimokuLogItem {
   total_minutes: number;
   client_info: string;
   status: string;
+  created_at: string;
+}
+
+export interface BackupItem {
+  id: number;
+  name: string;
+  content: string;
   created_at: string;
 }
 
@@ -114,6 +124,16 @@ class PostgresDBService {
         )
       `);
 
+      // Crea la tabella backups se non esiste
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS backups (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL UNIQUE,
+          content TEXT NOT NULL,
+          created_at TIMESTAMP NOT NULL DEFAULT NOW()
+        )
+      `);
+
       // Verifica se esiste un contatore
       const counterResult = await pool.query('SELECT * FROM counter LIMIT 1');
       if (counterResult.rows.length === 0) {
@@ -146,6 +166,28 @@ class PostgresDBService {
         `);
       }
 
+      // Verifica la tabella daimoku_log
+      console.log('Checking daimoku_log table...');
+      const tableResult = await pool.query(`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_name = 'daimoku_log'
+        )
+      `);
+      console.log(`daimoku_log table exists: ${tableResult.rows[0].exists}`);
+
+      if (tableResult.rows[0].exists) {
+        const columnsResult = await pool.query(`
+          SELECT column_name, data_type 
+          FROM information_schema.columns 
+          WHERE table_name = 'daimoku_log'
+        `);
+        console.log('daimoku_log columns:');
+        columnsResult.rows.forEach(row => {
+          console.log(`- ${row.column_name}: ${row.data_type}`);
+        });
+      }
+
       console.log('Database initialized successfully');
     } catch (error) {
       console.error('Error initializing database:', error);
@@ -174,58 +216,61 @@ class PostgresDBService {
    * @returns Il nuovo conteggio
    */
   async incrementCount(amount: number = 1, clientInfo: string = ''): Promise<number> {
-    const client = await pool.connect();
+    console.log(`[DB] Incrementing count by ${amount}`);
+    console.log(`[DB] Client info: ${clientInfo}`);
+    
+    // Prima incrementa il contatore
+    let newCount = 0;
     try {
-      // Inizia una transazione
-      await client.query('BEGIN');
-
-      // Incrementa il contatore
-      const result = await client.query(
+      console.log('[DB] Updating counter...');
+      const result = await pool.query(
         'UPDATE counter SET value = value + $1 RETURNING value',
         [amount]
       );
+      newCount = result.rows[0]?.value || 0;
+      console.log(`[DB] Counter incremented successfully. New count: ${newCount}`);
+    } catch (error) {
+      console.error('[DB] Error incrementing counter:', error);
+      throw error;
+    }
 
-      const newCount = result.rows[0]?.value || 0;
-
+    // Poi inserisci il log
+    try {
       // Calcola ore e minuti
       const hours = Math.floor(amount / 60);
       const minutes = amount % 60;
 
+      console.log('[DB] Inserting log entry...');
       // Registra l'operazione nel log
-      await client.query(
+      const logResult = await pool.query(
         `INSERT INTO daimoku_log
         (amount, hours, minutes, total_minutes, client_info, status)
-        VALUES ($1, $2, $3, $4, $5, $6)`,
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id`,
         [amount, hours, minutes, amount, clientInfo, 'success']
       );
-
-      // Commit della transazione
-      await client.query('COMMIT');
-
-      return newCount;
+      console.log(`[DB] Log entry inserted successfully with ID: ${logResult.rows[0]?.id}`);
     } catch (error) {
-      // Rollback in caso di errore
-      await client.query('ROLLBACK');
-      console.error('Error incrementing count:', error);
-
-      // Tenta di registrare l'errore nel log
+      console.error('[DB] Error inserting log entry:', error);
+      // Non lanciare l'errore qui, così il contatore viene comunque aggiornato
+      
+      // Tenta di registrare l'errore nel log con una query separata
       try {
         const errorMessage = error instanceof Error ? error.message : 'unknown error';
+        console.log(`[DB] Logging error: ${errorMessage}`);
         await pool.query(
           `INSERT INTO daimoku_log
           (amount, hours, minutes, total_minutes, client_info, status)
           VALUES ($1, $2, $3, $4, $5, $6)`,
           [amount, Math.floor(amount / 60), amount % 60, amount, clientInfo, `error: ${errorMessage}`]
         );
+        console.log('[DB] Error logged successfully');
       } catch (logError) {
-        console.error('Error logging failed operation:', logError);
+        console.error('[DB] Error logging failed operation:', logError);
       }
-
-      throw error;
-    } finally {
-      // Rilascia il client
-      client.release();
     }
+
+    return newCount;
   }
 
   /**
@@ -250,7 +295,12 @@ class PostgresDBService {
     try {
       const result = await pool.query('SELECT * FROM message LIMIT 1');
       if (result.rows.length === 0) {
-        throw new Error('No message found');
+        return {
+          content: 'Niente può distruggere i tesori del cuore.',
+          htmlContent: '<p>Niente può distruggere i tesori del cuore.</p>',
+          fullContent: '<div class="message-highlight"><p>Niente può distruggere i tesori del cuore.</p></div>',
+          objectivesContent: '<li>Realizziamo in Unità 10.000.000 di Daimoku per la protezione e la buona salute di tutti i praticanti e di tutti i cittadini del Vesuvio</li><li>Studiamo insieme le guide di Sensei</li>'
+        };
       }
 
       const row = result.rows[0];
@@ -275,26 +325,31 @@ class PostgresDBService {
    * @returns Il messaggio aggiornato
    */
   async updateMessage(content: string, htmlContent: string, fullContent: string, objectivesContent: string): Promise<Message> {
+    const client = await pool.connect();
     try {
-      // Ottieni il messaggio corrente
-      const currentMessage = await this.getMessage();
-
-      // Aggiungi il messaggio corrente alla cronologia
-      await pool.query(`
-        INSERT INTO message_history (content, html_content, full_content, objectives_content)
-        VALUES ($1, $2, $3, $4)
-      `, [
-        currentMessage.content,
-        currentMessage.htmlContent,
-        currentMessage.fullContent,
-        currentMessage.objectivesContent
-      ]);
+      // Inizia una transazione
+      await client.query('BEGIN');
 
       // Aggiorna il messaggio
-      await pool.query(`
-        UPDATE message
-        SET content = $1, html_content = $2, full_content = $3, objectives_content = $4
-      `, [content, htmlContent, fullContent, objectivesContent]);
+      await client.query(
+        `UPDATE message SET
+        content = $1,
+        html_content = $2,
+        full_content = $3,
+        objectives_content = $4`,
+        [content, htmlContent, fullContent, objectivesContent]
+      );
+
+      // Aggiungi alla cronologia
+      await client.query(
+        `INSERT INTO message_history
+        (content, html_content, full_content, objectives_content)
+        VALUES ($1, $2, $3, $4)`,
+        [content, htmlContent, fullContent, objectivesContent]
+      );
+
+      // Commit della transazione
+      await client.query('COMMIT');
 
       return {
         content,
@@ -303,8 +358,13 @@ class PostgresDBService {
         objectivesContent
       };
     } catch (error) {
+      // Rollback in caso di errore
+      await client.query('ROLLBACK');
       console.error('Error updating message:', error);
       throw error;
+    } finally {
+      // Rilascia il client
+      client.release();
     }
   }
 
@@ -315,20 +375,11 @@ class PostgresDBService {
    */
   async getMessageHistory(limit: number = 10): Promise<MessageHistoryItem[]> {
     try {
-      const result = await pool.query(`
-        SELECT * FROM message_history
-        ORDER BY created_at DESC
-        LIMIT $1
-      `, [limit]);
-
-      return result.rows.map(row => ({
-        id: row.id,
-        content: row.content,
-        html_content: row.html_content,
-        full_content: row.full_content,
-        objectives_content: row.objectives_content,
-        created_at: row.created_at.toISOString()
-      }));
+      const result = await pool.query(
+        'SELECT * FROM message_history ORDER BY created_at DESC LIMIT $1',
+        [limit]
+      );
+      return result.rows;
     } catch (error) {
       console.error('Error getting message history:', error);
       throw error;
@@ -343,21 +394,16 @@ class PostgresDBService {
    */
   async authenticateUser(username: string, password: string): Promise<User | null> {
     try {
-      const result = await pool.query(`
-        SELECT * FROM users
-        WHERE username = $1 AND password = $2
-      `, [username, password]);
-
+      const result = await pool.query(
+        'SELECT * FROM users WHERE username = $1 AND password = $2',
+        [username, password]
+      );
+      
       if (result.rows.length === 0) {
         return null;
       }
-
-      const row = result.rows[0];
-      return {
-        id: row.id,
-        username: row.username,
-        password: row.password
-      };
+      
+      return result.rows[0];
     } catch (error) {
       console.error('Error authenticating user:', error);
       throw error;
@@ -372,22 +418,11 @@ class PostgresDBService {
    */
   async getDaimokuLogs(limit: number = 100, offset: number = 0): Promise<DaimokuLogItem[]> {
     try {
-      const result = await pool.query(`
-        SELECT * FROM daimoku_log
-        ORDER BY created_at DESC
-        LIMIT $1 OFFSET $2
-      `, [limit, offset]);
-
-      return result.rows.map(row => ({
-        id: row.id,
-        amount: row.amount,
-        hours: row.hours,
-        minutes: row.minutes,
-        total_minutes: row.total_minutes,
-        client_info: row.client_info,
-        status: row.status,
-        created_at: row.created_at.toISOString()
-      }));
+      const result = await pool.query(
+        'SELECT * FROM daimoku_log ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+        [limit, offset]
+      );
+      return result.rows;
     } catch (error) {
       console.error('Error getting daimoku logs:', error);
       throw error;
@@ -402,7 +437,7 @@ class PostgresDBService {
     try {
       // Ottieni il totale dei minuti di daimoku
       const totalResult = await pool.query(`
-        SELECT
+        SELECT 
           SUM(total_minutes) as total_minutes,
           COUNT(*) as total_count,
           COUNT(CASE WHEN status = 'success' THEN 1 END) as success_count,
@@ -426,12 +461,136 @@ class PostgresDBService {
       throw error;
     }
   }
+
+  /**
+   * Salva un backup nel database
+   * @param name Nome del backup
+   * @param content Contenuto del backup
+   * @returns ID del backup creato
+   */
+  async saveBackup(name: string, content: string): Promise<number> {
+    try {
+      const result = await pool.query(
+        'INSERT INTO backups (name, content) VALUES ($1, $2) RETURNING id',
+        [name, content]
+      );
+      return result.rows[0]?.id;
+    } catch (error) {
+      console.error('Error saving backup:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ottiene un backup dal database
+   * @param name Nome del backup
+   * @returns Backup
+   */
+  async getBackup(name: string): Promise<BackupItem | null> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM backups WHERE name = $1',
+        [name]
+      );
+      
+      if (result.rows.length === 0) {
+        return null;
+      }
+      
+      const row = result.rows[0];
+      return {
+        id: row.id,
+        name: row.name,
+        content: row.content,
+        created_at: row.created_at.toISOString()
+      };
+    } catch (error) {
+      console.error('Error getting backup:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ottiene tutti i backup dal database
+   * @param limit Numero massimo di backup da restituire (default: 100)
+   * @param offset Offset per la paginazione (default: 0)
+   * @returns Lista di backup
+   */
+  async getBackups(limit: number = 100, offset: number = 0): Promise<BackupItem[]> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM backups ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+        [limit, offset]
+      );
+      
+      return result.rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        content: row.content,
+        created_at: row.created_at.toISOString()
+      }));
+    } catch (error) {
+      console.error('Error getting backups:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina un backup dal database
+   * @param name Nome del backup
+   * @returns true se l'operazione è riuscita
+   */
+  async deleteBackup(name: string): Promise<boolean> {
+    try {
+      const result = await pool.query(
+        'DELETE FROM backups WHERE name = $1 RETURNING id',
+        [name]
+      );
+      
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error('Error deleting backup:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina i backup più vecchi mantenendo solo un numero specificato di backup più recenti
+   * @param maxBackups Numero massimo di backup da mantenere
+   * @returns Numero di backup eliminati
+   */
+  async cleanupOldBackups(maxBackups: number): Promise<number> {
+    try {
+      // Ottieni il numero totale di backup
+      const countResult = await pool.query('SELECT COUNT(*) as count FROM backups');
+      const totalBackups = parseInt(countResult.rows[0]?.count) || 0;
+      
+      // Se il numero di backup è inferiore o uguale al massimo, non fare nulla
+      if (totalBackups <= maxBackups) {
+        return 0;
+      }
+      
+      // Calcola quanti backup eliminare
+      const backupsToDelete = totalBackups - maxBackups;
+      
+      // Elimina i backup più vecchi
+      const result = await pool.query(`
+        DELETE FROM backups
+        WHERE id IN (
+          SELECT id FROM backups
+          ORDER BY created_at ASC
+          LIMIT $1
+        )
+        RETURNING id
+      `, [backupsToDelete]);
+      
+      return result.rowCount;
+    } catch (error) {
+      console.error('Error cleaning up old backups:', error);
+      throw error;
+    }
+  }
 }
 
 // Esporta un'istanza singleton del servizio
 export const postgresDBService = new PostgresDBService();
-
-// Inizializza il database
-postgresDBService.initDatabase().catch(error => {
-  console.error('Failed to initialize database:', error);
-});
