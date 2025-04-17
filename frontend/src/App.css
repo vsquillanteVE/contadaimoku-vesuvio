@@ -57,10 +57,12 @@ body {
 
 .logo-container {
   display: flex;
-  align-items: center;
-  justify-content: center; /* Centrato su mobile */
+  flex-direction: column; /* Colonna su mobile */
+  align-items: center; /* Centrato su mobile */
+  justify-content: center;
   margin-bottom: 0.25rem;
-  flex-wrap: nowrap;
+  position: relative; /* Per posizionamento assoluto su desktop */
+  width: 100%;
 }
 
 .logo {
@@ -984,17 +986,27 @@ body {
 
 @media (min-width: 1024px) {
   .header {
-    text-align: left;
+    text-align: center;
+    position: relative;
   }
 
-  /* Logo a sinistra solo su desktop */
+  /* Layout desktop: logo a sinistra e titolo centrato */
   .logo-container {
-    justify-content: flex-start;
+    flex-direction: row; /* Riga su desktop */
+    justify-content: center; /* Centrato */
+  }
+
+  .logo-image {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .title-container {
-    align-items: flex-start; /* Allineato a sinistra su desktop */
-    text-align: left;
+    align-items: center; /* Centrato su desktop */
+    text-align: center;
+    margin-left: 0; /* Rimuove il margine per centrare correttamente */
   }
 
   .message-highlight {
