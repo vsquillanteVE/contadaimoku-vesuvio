@@ -101,6 +101,25 @@ body {
   flex-direction: column;
   align-items: center;
   margin: 1.5rem 0;
+  position: relative;
+}
+
+/* Logo nel contatore (solo mobile) */
+.counter-logo-mobile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.counter-logo-image {
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: white;
+  padding: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .counter-display {
@@ -426,12 +445,13 @@ body {
 .logo-image {
   max-width: 100%;
   height: auto;
-  max-height: 50px; /* Ridotto ulteriormente da 80px a 50px */
-  margin-right: 10px; /* Aggiunto margine a destra anche su mobile */
-  border-radius: 50%; /* Reso circolare */
+  max-height: 50px;
+  margin-right: 10px;
+  border-radius: 50%;
   background-color: white;
   padding: 2px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: none; /* Nascosto su mobile */
 }
 
 /* Rimuoviamo lo stile del logo nella sezione Information */
@@ -994,12 +1014,18 @@ body {
     left: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
+    display: block; /* Mostrato su desktop */
   }
 
   .title-container {
     align-items: center; /* Centrato su desktop */
     text-align: center;
     margin-left: 0; /* Rimuove il margine per centrare correttamente */
+  }
+
+  /* Nascondi il logo nel contatore su desktop */
+  .counter-logo-mobile {
+    display: none;
   }
 
   /* Stili specifici per la pagina di login su desktop */
