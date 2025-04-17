@@ -10,6 +10,7 @@
    - [Contatore](#contatore)
    - [Messaggio](#messaggio)
    - [Autenticazione](#endpoint-autenticazione)
+   - [Backup](#backup)
 5. [Modelli di dati](#modelli-di-dati)
 6. [Codici di stato](#codici-di-stato)
 7. [Gestione degli errori](#gestione-degli-errori)
@@ -299,6 +300,76 @@ Autentica un utente.
     "id": 1,
     "username": "admin"
   }
+}
+```
+
+### Backup
+
+#### POST /backup/daimoku-logs
+
+Crea un backup manuale dei log di daimoku.
+
+**Parametri**:
+
+| Nome      | Tipo   | Descrizione                                      | Obbligatorio |
+|-----------|--------|--------------------------------------------------|--------------|
+| startDate | string | Data di inizio per filtrare i log (ISO 8601)     | No           |
+| endDate   | string | Data di fine per filtrare i log (ISO 8601)       | No           |
+
+**Risposta**:
+
+```json
+{
+  "success": true,
+  "message": "Backup created successfully",
+  "filePath": "./backups/daimoku_logs_2023-06-15T10-30-00.000Z.json"
+}
+```
+
+#### GET /backup
+
+Ottiene la lista dei backup disponibili.
+
+**Parametri**: Nessuno
+
+**Risposta**:
+
+```json
+{
+  "backups": [
+    "daimoku_logs_2023-06-15T10-30-00.000Z.json",
+    "daimoku_logs_2023-06-16T10-30-00.000Z.json"
+  ]
+}
+```
+
+#### GET /backup/:fileName
+
+Scarica un backup specifico.
+
+**Parametri**:
+
+| Nome     | Tipo   | Descrizione                                | Obbligatorio |
+|----------|--------|--------------------------------------------|--------------|
+| fileName | string | Nome del file di backup                    | Sì           |
+
+**Risposta**: File JSON con il backup.
+
+#### DELETE /backup/:fileName
+
+Elimina un backup specifico.
+
+**Parametri**:
+
+| Nome     | Tipo   | Descrizione                                | Obbligatorio |
+|----------|--------|--------------------------------------------|--------------|
+| fileName | string | Nome del file di backup                    | Sì           |
+
+**Risposta**:
+
+```json
+{
+  "success": true
 }
 ```
 

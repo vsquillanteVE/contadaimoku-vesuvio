@@ -168,9 +168,15 @@ L'applicazione implementa meccanismi robusti per garantire la persistenza dei da
    - Timestamp dell'operazione
    - Stato dell'operazione (successo o errore)
 
-4. **Backup automatici**: Il database Neon PostgreSQL esegue backup automatici per garantire che i dati non vengano mai persi.
+4. **Backup automatici**: Ogni volta che viene aggiunto un nuovo conteggio di daimoku, viene creato automaticamente un backup di tutti i log in formato JSON. Il sistema mantiene solo un numero limitato di backup (default: 10), eliminando automaticamente i più vecchi.
 
-5. **Esportazione dei dati**: È possibile esportare i log in formato CSV per l'analisi offline o il backup manuale.
+5. **Backup del database**: Il database Neon PostgreSQL esegue backup automatici per garantire che i dati non vengano mai persi.
+
+6. **Esportazione dei dati**: È possibile esportare i log in formato CSV o JSON per l'analisi offline o il backup manuale.
+
+7. **API di backup**: Sono disponibili API per creare, visualizzare, scaricare ed eliminare i backup manualmente.
+
+Per maggiori dettagli sul sistema di backup automatico, consultare il file [BACKUP.md](BACKUP.md).
 
 ## Frontend
 
