@@ -89,9 +89,6 @@ const Counter: React.FC = () => {
 
   return (
     <div className="counter-container">
-      <div className="counter-logo-mobile">
-        <img src="/logo.png" alt="Logo Capitolo Litorale Vesuviano" className="counter-logo-image" />
-      </div>
       <div className="counter-display">
         <animated.h1 className="counter-value">
           {props.number.to(n => Math.floor(n))}

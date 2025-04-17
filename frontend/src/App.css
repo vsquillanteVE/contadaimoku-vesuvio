@@ -36,8 +36,8 @@ body {
   overflow-y: auto;
   background-image: url('/logo.png');
   background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 70%;
+  background-position: center 30%; /* Spostato verso l'alto per centrare nella zona del contatore */
+  background-size: 80%; /* Aumentato leggermente per una migliore visibilità */
   background-attachment: fixed;
   background-blend-mode: soft-light;
   background-color: rgba(255, 255, 255, 0.85);
@@ -104,23 +104,7 @@ body {
   position: relative;
 }
 
-/* Logo nel contatore (solo mobile) */
-.counter-logo-mobile {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.counter-logo-image {
-  height: 50px;
-  width: 50px;
-  object-fit: contain;
-  border-radius: 50%;
-  background-color: white;
-  padding: 2px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+/* Stili per il logo nel contatore rimossi */
 
 .counter-display {
   font-size: 1.5rem;
@@ -347,8 +331,8 @@ body {
   background-color: #f8f9fa;
   background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%), url('/logo.png');
   background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 70%;
+  background-position: center 30%; /* Spostato verso l'alto per centrare nella zona del contatore */
+  background-size: 80%; /* Aumentato leggermente per una migliore visibilità */
   background-attachment: fixed;
   background-blend-mode: soft-light;
   display: flex;
@@ -1023,10 +1007,7 @@ body {
     margin-left: 0; /* Rimuove il margine per centrare correttamente */
   }
 
-  /* Nascondi il logo nel contatore su desktop */
-  .counter-logo-mobile {
-    display: none;
-  }
+  /* Riferimento al logo nel contatore rimosso */
 
   /* Stili specifici per la pagina di login su desktop */
   .login-header .logo-container {
