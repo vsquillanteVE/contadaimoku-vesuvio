@@ -17,10 +17,11 @@ class DBService {
     /**
      * Incrementa il conteggio
      * @param amount Quantità da incrementare (default: 1)
+     * @param clientInfo Informazioni sul client (opzionale)
      * @returns Il nuovo conteggio
      */
-    async incrementCount(amount = 1) {
-        return db_postgres_service_1.postgresDBService.incrementCount(amount);
+    async incrementCount(amount = 1, clientInfo = '') {
+        return db_postgres_service_1.postgresDBService.incrementCount(amount, clientInfo);
     }
     /**
      * Resetta il conteggio a 0
@@ -63,6 +64,22 @@ class DBService {
      */
     async authenticateUser(username, password) {
         return db_postgres_service_1.postgresDBService.authenticateUser(username, password);
+    }
+    /**
+     * Ottiene la cronologia dei log di daimoku
+     * @param limit Numero massimo di log da restituire (default: 100)
+     * @param offset Offset per la paginazione (default: 0)
+     * @returns La cronologia dei log di daimoku
+     */
+    async getDaimokuLogs(limit = 100, offset = 0) {
+        return db_postgres_service_1.postgresDBService.getDaimokuLogs(limit, offset);
+    }
+    /**
+     * Ottiene statistiche sui log di daimoku
+     * @returns Statistiche sui log di daimoku
+     */
+    async getDaimokuStats() {
+        return db_postgres_service_1.postgresDBService.getDaimokuStats();
     }
 }
 // Esporta un'istanza singleton del servizio
