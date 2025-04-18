@@ -547,7 +547,7 @@ class PostgresDBService {
         [name]
       );
       
-      return result.rowCount > 0;
+      return (result.rowCount || 0) > 0;
     } catch (error) {
       console.error('Error deleting backup:', error);
       throw error;
@@ -584,7 +584,7 @@ class PostgresDBService {
         RETURNING id
       `, [backupsToDelete]);
       
-      return result.rowCount;
+      return result.rowCount || 0;
     } catch (error) {
       console.error('Error cleaning up old backups:', error);
       throw error;
