@@ -368,4 +368,182 @@ router.post('/debug-daimoku-log', async (req, res) => {
   }
 });
 
+/**
+ * @route POST /api/direct-db-test
+ * @desc Test diretto della connessione al database e delle operazioni sulla tabella daimoku_log
+ * @access Public
+ */
+router.post('/direct-db-test', async (req, res) => {
+  try {
+    console.log('[DIRECT-DB-TEST] Starting direct database test...');
+
+    // Crea un pool di connessioni
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // Risultati dei test
+    const testResults: any = {
+      connection: false,
+      tables: {} as any,
+      permissions: {} as any,
+      insertTest: false,
+      insertError: null as any,
+      queryTest: false,
+      queryError: null as any,
+      environment: {
+        nodeEnv: process.env.NODE_ENV,
+        vercel: process.env.VERCEL ? true : false,
+        databaseUrl: process.env.DATABASE_URL ? 'Set (length: ' + process.env.DATABASE_URL.length + ')' : 'Not set'
+      } as any
+    };
+
+    // Test 1: Connessione al database
+    try {
+      console.log('[DIRECT-DB-TEST] Testing database connection...');
+      const connResult = await pool.query('SELECT NOW()');
+      testResults.connection = true;
+      console.log('[DIRECT-DB-TEST] Database connection successful:', connResult.rows[0].now);
+    } catch (connError) {
+      console.error('[DIRECT-DB-TEST] Database connection error:', connError);
+      testResults.connection = false;
+      const err = connError as Error;
+      testResults.environment.connectionError = err.message;
+    }
+
+    // Test 2: Verifica delle tabelle
+    try {
+      console.log('[DIRECT-DB-TEST] Checking tables...');
+      const tablesResult = await pool.query(`
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+      `);
+
+      const tables = tablesResult.rows.map(row => row.table_name);
+      testResults.tables.list = tables;
+      console.log('[DIRECT-DB-TEST] Tables found:', tables);
+
+      // Verifica specifica per daimoku_log
+      const daimokuLogExists = tables.includes('daimoku_log');
+      testResults.tables.daimoku_log_exists = daimokuLogExists;
+
+      if (daimokuLogExists) {
+        // Ottieni informazioni sulle colonne
+        const columnsResult = await pool.query(`
+          SELECT column_name, data_type
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+          AND table_name = 'daimoku_log'
+        `);
+
+        testResults.tables.daimoku_log_columns = columnsResult.rows;
+        console.log('[DIRECT-DB-TEST] daimoku_log columns:', columnsResult.rows);
+
+        // Ottieni il numero di record
+        const countResult = await pool.query('SELECT COUNT(*) FROM daimoku_log');
+        testResults.tables.daimoku_log_count = parseInt(countResult.rows[0].count);
+        console.log('[DIRECT-DB-TEST] daimoku_log record count:', countResult.rows[0].count);
+      }
+    } catch (tablesError) {
+      console.error('[DIRECT-DB-TEST] Error checking tables:', tablesError);
+      const err = tablesError as Error;
+      testResults.tables.error = err.message;
+    }
+
+    // Test 3: Verifica dei permessi
+    try {
+      console.log('[DIRECT-DB-TEST] Checking permissions...');
+      const permissionsResult = await pool.query(`
+        SELECT grantee, table_name, privilege_type
+        FROM information_schema.table_privileges
+        WHERE table_schema = 'public'
+        AND table_name = 'daimoku_log'
+      `);
+
+      testResults.permissions.daimoku_log = permissionsResult.rows;
+      console.log('[DIRECT-DB-TEST] daimoku_log permissions:', permissionsResult.rows);
+    } catch (permissionsError) {
+      console.error('[DIRECT-DB-TEST] Error checking permissions:', permissionsError);
+      const err = permissionsError as Error;
+      testResults.permissions.error = err.message;
+    }
+
+    // Test 4: Inserimento di un record di test
+    try {
+      console.log('[DIRECT-DB-TEST] Testing insert operation...');
+
+      // Se la tabella non esiste, creala
+      if (!testResults.tables.daimoku_log_exists) {
+        console.log('[DIRECT-DB-TEST] Creating daimoku_log table...');
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS daimoku_log (
+            id SERIAL PRIMARY KEY,
+            amount INTEGER NOT NULL,
+            hours INTEGER NOT NULL,
+            minutes INTEGER NOT NULL,
+            total_minutes INTEGER NOT NULL,
+            client_info TEXT,
+            status TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT NOW()
+          )
+        `);
+        console.log('[DIRECT-DB-TEST] daimoku_log table created successfully');
+      }
+
+      // Inserisci un record di test
+      const insertResult = await pool.query(`
+        INSERT INTO daimoku_log
+        (amount, hours, minutes, total_minutes, client_info, status)
+        VALUES (1, 0, 1, 1, $1, 'direct-test')
+        RETURNING id
+      `, [JSON.stringify({
+        source: 'direct-db-test',
+        timestamp: new Date().toISOString()
+      })]);
+
+      testResults.insertTest = true;
+      testResults.insertId = insertResult.rows[0].id;
+      console.log('[DIRECT-DB-TEST] Insert test successful, ID:', insertResult.rows[0].id);
+    } catch (insertError) {
+      console.error('[DIRECT-DB-TEST] Error during insert test:', insertError);
+      testResults.insertTest = false;
+      const err = insertError as Error;
+      testResults.insertError = err.message;
+    }
+
+    // Test 5: Query per verificare l'inserimento
+    try {
+      console.log('[DIRECT-DB-TEST] Testing query operation...');
+      const queryResult = await pool.query('SELECT * FROM daimoku_log ORDER BY created_at DESC LIMIT 5');
+
+      testResults.queryTest = true;
+      testResults.recentLogs = queryResult.rows;
+      console.log('[DIRECT-DB-TEST] Query test successful, recent logs:', queryResult.rows);
+    } catch (queryError) {
+      console.error('[DIRECT-DB-TEST] Error during query test:', queryError);
+      testResults.queryTest = false;
+      const err = queryError as Error;
+      testResults.queryError = err.message;
+    }
+
+    // Restituisci i risultati dei test
+    res.json({
+      success: true,
+      testResults
+    });
+  } catch (error) {
+    console.error('[DIRECT-DB-TEST] Unexpected error:', error);
+    const err = error as Error;
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      stack: process.env.NODE_ENV === 'production' ? '(hidden in production)' : err.stack
+    });
+  }
+});
+
 export default router;
