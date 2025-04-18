@@ -7,6 +7,48 @@ import { backupService } from '../services/backup.service';
  */
 export class CounterController {
   /**
+   * Test per verificare la tabella daimoku_log
+   * @param req Richiesta Express
+   * @param res Risposta Express
+   */
+  async testDaimokuLog(req: Request, res: Response): Promise<void> {
+    try {
+      console.log('[TEST-DAIMOKU-LOG] Starting test...');
+
+      // Ottieni il conteggio attuale
+      const count = await dbService.getCount();
+      console.log(`[TEST-DAIMOKU-LOG] Current count: ${count}`);
+
+      // Ottieni i log di daimoku
+      const logs = await dbService.getDaimokuLogs(10, 0);
+      console.log(`[TEST-DAIMOKU-LOG] Found ${logs.length} logs`);
+
+      // Verifica se la tabella daimoku_log esiste
+      const tableExists = logs !== null;
+      console.log(`[TEST-DAIMOKU-LOG] Table exists: ${tableExists}`);
+
+      // Restituisci il risultato
+      res.json({
+        success: true,
+        count,
+        tableExists,
+        logs,
+        environment: {
+          nodeEnv: process.env.NODE_ENV,
+          vercel: process.env.VERCEL ? true : false,
+          databaseUrl: process.env.DATABASE_URL ? 'Set (length: ' + process.env.DATABASE_URL.length + ')' : 'Not set'
+        }
+      });
+    } catch (error) {
+      console.error('[TEST-DAIMOKU-LOG] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: process.env.NODE_ENV === 'production' ? '(hidden in production)' : error instanceof Error ? error.stack : 'No stack trace'
+      });
+    }
+  }
+  /**
    * Ottiene il conteggio attuale
    * @param req Richiesta Express
    * @param res Risposta Express

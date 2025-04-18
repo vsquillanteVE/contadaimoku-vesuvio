@@ -52,4 +52,11 @@ router.get('/stats', (req, res) => counterController.getDaimokuStats(req, res));
  */
 router.get('/export', (req, res) => counterController.exportDaimokuLogs(req, res));
 
+/**
+ * @route GET /api/count/test-daimoku-log
+ * @desc Test per verificare la tabella daimoku_log
+ * @access Public
+ */
+router.get('/test-daimoku-log', (req, res) => counterController.testDaimokuLog(req, res));
+
 export default router;
