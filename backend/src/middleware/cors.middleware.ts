@@ -6,10 +6,10 @@ import config from '../config';
  * Middleware CORS configurato
  */
 export const corsMiddleware = cors({
-  origin: config.cors.origins,
+  origin: '*', // Consenti tutte le origini per risolvere il problema CORS
   methods: config.cors.methods,
   allowedHeaders: config.cors.allowedHeaders,
-  credentials: config.cors.credentials
+  credentials: true
 });
 
 /**
