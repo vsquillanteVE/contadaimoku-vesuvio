@@ -219,18 +219,59 @@ class PostgresDBService {
     console.log(`[DB] Incrementing count by ${amount}`);
     console.log(`[DB] Client info: ${clientInfo}`);
     console.log('[DB] Database URL:', process.env.DATABASE_URL ? 'Set (length: ' + process.env.DATABASE_URL.length + ')' : 'Not set');
+    console.log('[DB] Environment:', process.env.NODE_ENV || 'development');
+    console.log('[DB] Vercel:', process.env.VERCEL || 'not-vercel');
+
+    // Prima verifica se la tabella daimoku_log esiste
+    try {
+      console.log('[DB] Checking if daimoku_log table exists (pre-transaction)...');
+      const tableCheckResult = await pool.query(`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables
+          WHERE table_schema = 'public'
+          AND table_name = 'daimoku_log'
+        )
+      `);
+
+      const tableExists = tableCheckResult.rows[0].exists;
+      console.log(`[DB] daimoku_log table exists (pre-transaction): ${tableExists}`);
+
+      if (!tableExists) {
+        // Se la tabella non esiste, creala
+        console.log('[DB] Creating daimoku_log table (pre-transaction)...');
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS daimoku_log (
+            id SERIAL PRIMARY KEY,
+            amount INTEGER NOT NULL,
+            hours INTEGER NOT NULL,
+            minutes INTEGER NOT NULL,
+            total_minutes INTEGER NOT NULL,
+            client_info TEXT,
+            status TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT NOW()
+          )
+        `);
+        console.log('[DB] daimoku_log table created successfully (pre-transaction)');
+      }
+    } catch (preCheckError) {
+      console.error('[DB] Error during pre-transaction table check:', preCheckError);
+      // Non lanciare l'errore qui, continua con la transazione
+    }
 
     // Ottieni un client dal pool per la transazione
+    console.log('[DB] Getting client from pool...');
     const client = await pool.connect();
+    console.log('[DB] Client obtained from pool');
     let newCount = 0;
 
     try {
       // Inizia una transazione
       console.log('[DB] Beginning transaction...');
       await client.query('BEGIN');
+      console.log('[DB] Transaction started');
 
-      // Verifica se esiste la tabella daimoku_log
-      console.log('[DB] Checking if daimoku_log table exists...');
+      // Verifica di nuovo se esiste la tabella daimoku_log all'interno della transazione
+      console.log('[DB] Checking if daimoku_log table exists (in transaction)...');
       const tableResult = await client.query(`
         SELECT EXISTS (
           SELECT FROM information_schema.tables
@@ -240,11 +281,11 @@ class PostgresDBService {
       `);
 
       const tableExists = tableResult.rows[0].exists;
-      console.log(`[DB] daimoku_log table exists: ${tableExists}`);
+      console.log(`[DB] daimoku_log table exists (in transaction): ${tableExists}`);
 
       if (!tableExists) {
         // Se la tabella non esiste, creala
-        console.log('[DB] Creating daimoku_log table...');
+        console.log('[DB] Creating daimoku_log table (in transaction)...');
         await client.query(`
           CREATE TABLE IF NOT EXISTS daimoku_log (
             id SERIAL PRIMARY KEY,
@@ -257,7 +298,7 @@ class PostgresDBService {
             created_at TIMESTAMP NOT NULL DEFAULT NOW()
           )
         `);
-        console.log('[DB] daimoku_log table created successfully');
+        console.log('[DB] daimoku_log table created successfully (in transaction)');
       }
 
       // Incrementa il contatore
@@ -290,21 +331,48 @@ class PostgresDBService {
       console.log('[DB] Transaction committed successfully');
 
       // Verifica il numero di record nella tabella dopo l'inserimento
-      const countResult = await pool.query('SELECT COUNT(*) FROM daimoku_log');
-      const count = parseInt(countResult.rows[0]?.count) || 0;
-      console.log(`[DB] daimoku_log record count after insertion: ${count}`);
+      try {
+        console.log('[DB] Checking record count after insertion...');
+        const countResult = await pool.query('SELECT COUNT(*) FROM daimoku_log');
+        const count = parseInt(countResult.rows[0]?.count) || 0;
+        console.log(`[DB] daimoku_log record count after insertion: ${count}`);
+
+        // Ottieni gli ultimi 5 record per verifica
+        console.log('[DB] Getting recent logs...');
+        const recentLogsResult = await pool.query('SELECT * FROM daimoku_log ORDER BY created_at DESC LIMIT 5');
+        console.log('[DB] Recent logs:', JSON.stringify(recentLogsResult.rows));
+      } catch (verifyError) {
+        console.error('[DB] Error verifying insertion:', verifyError);
+        // Non lanciare l'errore qui, il contatore è già stato aggiornato
+      }
 
       return newCount;
     } catch (error) {
       // Rollback in caso di errore
       console.error('[DB] Error in incrementCount transaction:', error);
-      await client.query('ROLLBACK');
-      console.log('[DB] Transaction rolled back due to error');
+      try {
+        await client.query('ROLLBACK');
+        console.log('[DB] Transaction rolled back due to error');
+      } catch (rollbackError) {
+        console.error('[DB] Error during rollback:', rollbackError);
+      }
 
       // Tenta di registrare l'errore nel log con una query separata
       try {
         const errorMessage = error instanceof Error ? error.message : 'unknown error';
         console.log(`[DB] Logging error outside transaction: ${errorMessage}`);
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS daimoku_log (
+            id SERIAL PRIMARY KEY,
+            amount INTEGER NOT NULL,
+            hours INTEGER NOT NULL,
+            minutes INTEGER NOT NULL,
+            total_minutes INTEGER NOT NULL,
+            client_info TEXT,
+            status TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT NOW()
+          )
+        `);
         await pool.query(
           `INSERT INTO daimoku_log
           (amount, hours, minutes, total_minutes, client_info, status)
@@ -319,8 +387,12 @@ class PostgresDBService {
       throw error;
     } finally {
       // Rilascia il client
-      client.release();
-      console.log('[DB] Client released back to pool');
+      try {
+        client.release();
+        console.log('[DB] Client released back to pool');
+      } catch (releaseError) {
+        console.error('[DB] Error releasing client:', releaseError);
+      }
     }
   }
 
