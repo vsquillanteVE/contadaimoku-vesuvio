@@ -170,7 +170,7 @@ class PostgresDBService {
       console.log('Checking daimoku_log table...');
       const tableResult = await pool.query(`
         SELECT EXISTS (
-          SELECT FROM information_schema.tables 
+          SELECT FROM information_schema.tables
           WHERE table_name = 'daimoku_log'
         )
       `);
@@ -178,8 +178,8 @@ class PostgresDBService {
 
       if (tableResult.rows[0].exists) {
         const columnsResult = await pool.query(`
-          SELECT column_name, data_type 
-          FROM information_schema.columns 
+          SELECT column_name, data_type
+          FROM information_schema.columns
           WHERE table_name = 'daimoku_log'
         `);
         console.log('daimoku_log columns:');
@@ -218,31 +218,64 @@ class PostgresDBService {
   async incrementCount(amount: number = 1, clientInfo: string = ''): Promise<number> {
     console.log(`[DB] Incrementing count by ${amount}`);
     console.log(`[DB] Client info: ${clientInfo}`);
-    
-    // Prima incrementa il contatore
+    console.log('[DB] Database URL:', process.env.DATABASE_URL ? 'Set (length: ' + process.env.DATABASE_URL.length + ')' : 'Not set');
+
+    // Ottieni un client dal pool per la transazione
+    const client = await pool.connect();
     let newCount = 0;
+
     try {
+      // Inizia una transazione
+      console.log('[DB] Beginning transaction...');
+      await client.query('BEGIN');
+
+      // Verifica se esiste la tabella daimoku_log
+      console.log('[DB] Checking if daimoku_log table exists...');
+      const tableResult = await client.query(`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables
+          WHERE table_schema = 'public'
+          AND table_name = 'daimoku_log'
+        )
+      `);
+
+      const tableExists = tableResult.rows[0].exists;
+      console.log(`[DB] daimoku_log table exists: ${tableExists}`);
+
+      if (!tableExists) {
+        // Se la tabella non esiste, creala
+        console.log('[DB] Creating daimoku_log table...');
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS daimoku_log (
+            id SERIAL PRIMARY KEY,
+            amount INTEGER NOT NULL,
+            hours INTEGER NOT NULL,
+            minutes INTEGER NOT NULL,
+            total_minutes INTEGER NOT NULL,
+            client_info TEXT,
+            status TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT NOW()
+          )
+        `);
+        console.log('[DB] daimoku_log table created successfully');
+      }
+
+      // Incrementa il contatore
       console.log('[DB] Updating counter...');
-      const result = await pool.query(
+      const result = await client.query(
         'UPDATE counter SET value = value + $1 RETURNING value',
         [amount]
       );
       newCount = result.rows[0]?.value || 0;
       console.log(`[DB] Counter incremented successfully. New count: ${newCount}`);
-    } catch (error) {
-      console.error('[DB] Error incrementing counter:', error);
-      throw error;
-    }
 
-    // Poi inserisci il log
-    try {
       // Calcola ore e minuti
       const hours = Math.floor(amount / 60);
       const minutes = amount % 60;
 
-      console.log('[DB] Inserting log entry...');
       // Registra l'operazione nel log
-      const logResult = await pool.query(
+      console.log('[DB] Inserting log entry...');
+      const logResult = await client.query(
         `INSERT INTO daimoku_log
         (amount, hours, minutes, total_minutes, client_info, status)
         VALUES ($1, $2, $3, $4, $5, $6)
@@ -250,27 +283,45 @@ class PostgresDBService {
         [amount, hours, minutes, amount, clientInfo, 'success']
       );
       console.log(`[DB] Log entry inserted successfully with ID: ${logResult.rows[0]?.id}`);
+
+      // Commit della transazione
+      console.log('[DB] Committing transaction...');
+      await client.query('COMMIT');
+      console.log('[DB] Transaction committed successfully');
+
+      // Verifica il numero di record nella tabella dopo l'inserimento
+      const countResult = await pool.query('SELECT COUNT(*) FROM daimoku_log');
+      const count = parseInt(countResult.rows[0]?.count) || 0;
+      console.log(`[DB] daimoku_log record count after insertion: ${count}`);
+
+      return newCount;
     } catch (error) {
-      console.error('[DB] Error inserting log entry:', error);
-      // Non lanciare l'errore qui, così il contatore viene comunque aggiornato
-      
+      // Rollback in caso di errore
+      console.error('[DB] Error in incrementCount transaction:', error);
+      await client.query('ROLLBACK');
+      console.log('[DB] Transaction rolled back due to error');
+
       // Tenta di registrare l'errore nel log con una query separata
       try {
         const errorMessage = error instanceof Error ? error.message : 'unknown error';
-        console.log(`[DB] Logging error: ${errorMessage}`);
+        console.log(`[DB] Logging error outside transaction: ${errorMessage}`);
         await pool.query(
           `INSERT INTO daimoku_log
           (amount, hours, minutes, total_minutes, client_info, status)
           VALUES ($1, $2, $3, $4, $5, $6)`,
           [amount, Math.floor(amount / 60), amount % 60, amount, clientInfo, `error: ${errorMessage}`]
         );
-        console.log('[DB] Error logged successfully');
+        console.log('[DB] Error logged successfully outside transaction');
       } catch (logError) {
-        console.error('[DB] Error logging failed operation:', logError);
+        console.error('[DB] Error logging failed operation outside transaction:', logError);
       }
-    }
 
-    return newCount;
+      throw error;
+    } finally {
+      // Rilascia il client
+      client.release();
+      console.log('[DB] Client released back to pool');
+    }
   }
 
   /**
@@ -398,11 +449,11 @@ class PostgresDBService {
         'SELECT * FROM users WHERE username = $1 AND password = $2',
         [username, password]
       );
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       return result.rows[0];
     } catch (error) {
       console.error('Error authenticating user:', error);
@@ -437,7 +488,7 @@ class PostgresDBService {
     try {
       // Ottieni il totale dei minuti di daimoku
       const totalResult = await pool.query(`
-        SELECT 
+        SELECT
           SUM(total_minutes) as total_minutes,
           COUNT(*) as total_count,
           COUNT(CASE WHEN status = 'success' THEN 1 END) as success_count,
@@ -492,11 +543,11 @@ class PostgresDBService {
         'SELECT * FROM backups WHERE name = $1',
         [name]
       );
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         id: row.id,
@@ -522,7 +573,7 @@ class PostgresDBService {
         'SELECT * FROM backups ORDER BY created_at DESC LIMIT $1 OFFSET $2',
         [limit, offset]
       );
-      
+
       return result.rows.map(row => ({
         id: row.id,
         name: row.name,
@@ -546,7 +597,7 @@ class PostgresDBService {
         'DELETE FROM backups WHERE name = $1 RETURNING id',
         [name]
       );
-      
+
       return (result.rowCount || 0) > 0;
     } catch (error) {
       console.error('Error deleting backup:', error);
@@ -564,15 +615,15 @@ class PostgresDBService {
       // Ottieni il numero totale di backup
       const countResult = await pool.query('SELECT COUNT(*) as count FROM backups');
       const totalBackups = parseInt(countResult.rows[0]?.count) || 0;
-      
+
       // Se il numero di backup è inferiore o uguale al massimo, non fare nulla
       if (totalBackups <= maxBackups) {
         return 0;
       }
-      
+
       // Calcola quanti backup eliminare
       const backupsToDelete = totalBackups - maxBackups;
-      
+
       // Elimina i backup più vecchi
       const result = await pool.query(`
         DELETE FROM backups
@@ -583,7 +634,7 @@ class PostgresDBService {
         )
         RETURNING id
       `, [backupsToDelete]);
-      
+
       return result.rowCount || 0;
     } catch (error) {
       console.error('Error cleaning up old backups:', error);
