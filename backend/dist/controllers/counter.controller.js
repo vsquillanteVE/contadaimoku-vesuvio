@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.counterController = exports.CounterController = void 0;
 const db_service_1 = require("../services/db.service");
-const backup_service_1 = require("../services/backup.service");
 /**
  * Controller per gestire le operazioni sul contatore
  */
@@ -78,13 +77,8 @@ class CounterController {
             });
             // Incrementa il contatore
             const count = await db_service_1.dbService.incrementCount(amount, clientInfo);
-            // Esegui un backup automatico in background solo se non siamo in ambiente serverless
-            if (!process.env.VERCEL) {
-                this.triggerAutomaticBackup();
-            }
-            else {
-                console.log('[COUNTER] Skipping automatic backup in serverless environment');
-            }
+            // Nota: il backup automatico è stato rimosso per compatibilità con Vercel
+            console.log('[COUNTER] Automatic backup disabled for Vercel compatibility');
             // Restituisci il risultato
             res.json({ count });
         }
@@ -93,20 +87,7 @@ class CounterController {
             res.status(500).json({ error: 'Internal server error' });
         }
     }
-    /**
-     * Esegue un backup automatico in background
-     * @private
-     */
-    triggerAutomaticBackup() {
-        // Esegui il backup in modo asincrono senza attendere il completamento
-        backup_service_1.backupService.backupDaimokuLogs()
-            .then(filePath => {
-            console.log(`Automatic backup created successfully: ${filePath}`);
-        })
-            .catch(error => {
-            console.error('Error creating automatic backup:', error);
-        });
-    }
+    // Il metodo triggerAutomaticBackup è stato rimosso per compatibilità con Vercel
     /**
      * Resetta il conteggio
      * @param req Richiesta Express

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { dbService } from '../services/db.service';
-import { backupService } from '../services/backup.service';
 
 /**
  * Controller per gestire le operazioni sul contatore
@@ -83,12 +82,8 @@ export class CounterController {
       // Incrementa il contatore
       const count = await dbService.incrementCount(amount, clientInfo);
 
-      // Esegui un backup automatico in background solo se non siamo in ambiente serverless
-      if (!process.env.VERCEL) {
-        this.triggerAutomaticBackup();
-      } else {
-        console.log('[COUNTER] Skipping automatic backup in serverless environment');
-      }
+      // Nota: il backup automatico è stato rimosso per compatibilità con Vercel
+      console.log('[COUNTER] Automatic backup disabled for Vercel compatibility');
 
       // Restituisci il risultato
       res.json({ count });
@@ -98,20 +93,7 @@ export class CounterController {
     }
   }
 
-  /**
-   * Esegue un backup automatico in background
-   * @private
-   */
-  private triggerAutomaticBackup(): void {
-    // Esegui il backup in modo asincrono senza attendere il completamento
-    backupService.backupDaimokuLogs()
-      .then(filePath => {
-        console.log(`Automatic backup created successfully: ${filePath}`);
-      })
-      .catch(error => {
-        console.error('Error creating automatic backup:', error);
-      });
-  }
+  // Il metodo triggerAutomaticBackup è stato rimosso per compatibilità con Vercel
 
   /**
    * Resetta il conteggio
