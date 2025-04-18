@@ -78,8 +78,13 @@ class CounterController {
             });
             // Incrementa il contatore
             const count = await db_service_1.dbService.incrementCount(amount, clientInfo);
-            // Esegui un backup automatico in background
-            this.triggerAutomaticBackup();
+            // Esegui un backup automatico in background solo se non siamo in ambiente serverless
+            if (!process.env.VERCEL) {
+                this.triggerAutomaticBackup();
+            }
+            else {
+                console.log('[COUNTER] Skipping automatic backup in serverless environment');
+            }
             // Restituisci il risultato
             res.json({ count });
         }
