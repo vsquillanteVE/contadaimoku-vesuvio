@@ -35,3 +35,7 @@ logs/
 # Backup files
 *.bak
 *.backup
+/daimoku-backup/
+
+# Experimental code
+/src/
